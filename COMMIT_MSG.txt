@@ -1,5 +1,5 @@
-CI: Replace tauri-action with direct pnpm tauri build
+CI: Add release workflow (v* tags → GitHub Release with Windows installer)
 
-The tauri-apps/tauri-action@v2 tag does not exist (the action
-repo has no v2 release). Replace it with a direct shell command
-so the Windows build can proceed.
+New .github/workflows/release.yml triggers on v* tags, builds the
+Windows Tauri app, and publishes the MSI + NSIS installers as
+GitHub Release assets with auto-generated release notes.
