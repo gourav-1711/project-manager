@@ -1,0 +1,50 @@
+[
+  {
+    "id": "ponytail",
+    "name": "Ponytail",
+    "description": "Forces the laziest solution that actually works — stdlib first, native features before dependencies, minimal code. YAGNI enforcement.",
+    "npxCommand": "codebuff/skills/ponytail"
+  },
+  {
+    "id": "shadcn",
+    "name": "shadcn/ui",
+    "description": "Build UI components with shadcn/ui — manage components, search registries, apply preset codes, and compose design systems.",
+    "npxCommand": "shadcn@latest"
+  },
+  {
+    "id": "design-taste-frontend",
+    "name": "Design Taste (Frontend)",
+    "description": "Anti-slop frontend skill for landing pages, portfolios, and redesigns. Ships interfaces that don't look templated.",
+    "npxCommand": "codebuff/skills/design-taste-frontend"
+  },
+  {
+    "id": "agent-browser",
+    "name": "Agent Browser",
+    "description": "Fast browser automation CLI for AI agents. Navigate pages, fill forms, click buttons, take screenshots, scrape data.",
+    "npxCommand": "agent-browser@latest"
+  },
+  {
+    "id": "prisma-client-api",
+    "name": "Prisma Client API",
+    "description": "Prisma ORM queries, filters, operators, and client methods reference. Use when writing database queries or CRUD operations.",
+    "npxCommand": "codebuff/skills/prisma-client-api"
+  },
+  {
+    "id": "cloudflare",
+    "name": "Cloudflare Platform",
+    "description": "Comprehensive Cloudflare guide — Workers, Pages, KV, D1, R2, Durable Objects, AI, WAF, DDoS, and infrastructure-as-code.",
+    "npxCommand": "codebuff/skills/cloudflare"
+  },
+  {
+    "id": "seo",
+    "name": "SEO Optimizer",
+    "description": "Optimize for search engine visibility — meta tags, structured data, sitemaps, OG cards, and ranking improvements.",
+    "npxCommand": "codebuff/skills/seo"
+  },
+  {
+    "id": "security-best-practices",
+    "name": "Security Best Practices",
+    "description": "Language and framework-specific security reviews. Python, JavaScript/TypeScript, Go. Secure-by-default coding guidance.",
+    "npxCommand": "codebuff/skills/security-best-practices"
+  }
+]

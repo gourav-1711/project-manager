@@ -1,0 +1,39 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+.pnpm-*store/
+.pnpm
+
+# Build outputs
+dist/
+.next/
+out/
+.target/
+src-tauri/target/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# OS files
+*.log
+
+# Turbo
+.turbo
+
+# Tauri
+apps/desktop/src-tauri/target/
+
+# Landing
+apps/landing/.next/
+apps/landing/out/

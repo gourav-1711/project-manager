@@ -1,0 +1,97 @@
+@import "tailwindcss";
+
+/* ── Theme tokens via CSS custom properties ── */
+/* Tailwind v4 registers utility classes (bg-background etc.) from @theme, */
+/* and we override the underlying variables in :root / html.dark.         */
+
+@theme inline {
+  --color-background: var(--bg);
+  --color-foreground: var(--fg);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-fg);
+  --color-border: var(--border);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-fg);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-fg);
+  --color-ring: var(--border);
+
+  --font-sans: var(--font-geist-sans), system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), "Fira Code", monospace;
+
+  --animate-grid-shift: grid-shift 20s linear infinite;
+}
+
+/* ── Light theme (default) ── */
+:root {
+  --bg: #fafafa;
+  --fg: #18181b;
+  --muted: #e4e4e7;
+  --muted-fg: #71717a;
+  --border: #e4e4e7;
+  --card: #ffffff;
+  --card-fg: #18181b;
+  --accent: #18181b;
+  --accent-fg: #fafafa;
+}
+
+/* ── Dark theme (via class) ── */
+html.dark {
+  --bg: #0a0a0b;
+  --fg: #fafafa;
+  --muted: #27272a;
+  --muted-fg: #a1a1aa;
+  --border: #27272a;
+  --card: #18181b;
+  --card-fg: #fafafa;
+  --accent: #fafafa;
+  --accent-fg: #0a0a0b;
+}
+
+@keyframes grid-shift {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(32px, 32px); }
+}
+
+html {
+  scroll-behavior: smooth;
+  color-scheme: light dark;
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* Gradient text — light mode */
+.gradient-text {
+  background: linear-gradient(135deg, #18181b 0%, #52525b 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Gradient text — dark mode */
+html.dark .gradient-text {
+  background: linear-gradient(135deg, #fafafa 0%, #a1a1aa 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Accent gradient — stays colorful in both modes */
+.gradient-text-accent {
+  background: linear-gradient(135deg, #818cf8 0%, #c084fc 50%, #f472b6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Transition helper for theme-aware elements */
+.theme-transition {
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+
