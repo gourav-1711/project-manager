@@ -1,8 +1,5 @@
-CI: Add sccache, lld linker, and Rust compilation optimisations
+CI: Replace tauri-action with direct pnpm tauri build
 
-- Add sccache (Mozilla's distributed Rust compilation cache) via
-  mozilla-actions/sccache-action for faster subsequent CI runs
-- Add .cargo/config.toml with rust-lld.exe as the linker for Windows
-  targets (LLVM lld is 2-5x faster than default MSVC link.exe)
-- Set CARGO_INCREMENTAL=0 to avoid incremental overhead in clean CI
-- Set CARGO_NET_RETRY=3 for network resilience during crate downloads
+The tauri-apps/tauri-action@v2 tag does not exist (the action
+repo has no v2 release). Replace it with a direct shell command
+so the Windows build can proceed.

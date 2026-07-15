@@ -50,13 +50,10 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build Tauri app (Windows)
-        uses: tauri-apps/tauri-action@v2
-        id: tauri_build
-        with:
-          projectPath: apps/desktop
-          bundleIdentifier: com.devprojectorganizer.app
+        working-directory: apps/desktop
+        run: pnpm tauri build
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CI: "true"
 
       - name: Upload Windows installer artifact
         uses: actions/upload-artifact@v4
