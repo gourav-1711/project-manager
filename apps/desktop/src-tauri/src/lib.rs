@@ -343,6 +343,14 @@ fn run_npx_install(request: &InstallSkillRequest) -> Result<InstallResult, Strin
                 ),
             })
         }
+        Err(mpsc::RecvTimeoutError::Disconnected) => {
+            Ok(InstallResult {
+                success: false,
+                error: Some(
+                    "npx process disconnected unexpectedly.".to_string(),
+                ),
+            })
+        }
     }
 }
 

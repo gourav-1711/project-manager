@@ -1,5 +1,29 @@
-CI: Add release workflow (v* tags → GitHub Release with Windows installer)
+feat: UI/UX enhancement — motion animations, Magic UI, and Aceternity UI
 
-New .github/workflows/release.yml triggers on v* tags, builds the
-Windows Tauri app, and publishes the MSI + NSIS installers as
-GitHub Release assets with auto-generated release notes.
+Adds premium visual design to the landing page and desktop app:
+
+Landing Page:
+- motion/react scroll-triggered entry animations (replacing IntersectionObserver)
+- Mouse-tracking parallax hero gradients with useMotionValue/useTransform
+- Animated scroll indicator and staggered hero reveal
+- Aceternity Spotlight decorative beam in hero
+- Aceternity BackgroundBeamsWithCollision animated beams in CTA section
+- Aceternity WobbleCard tilt-on-hover for stats card
+- Magic UI Marquee scrolling feature showcase (forward + reverse rows)
+- useScroll() for nav background (replacing raw scroll listener)
+- New Stats section with hover animations
+- Shimmer effect on CTA buttons
+
+Desktop App:
+- MagicCard spotlight cursor effect on project cards
+- Staggered card entry animation via motion
+- AnimatePresence tab transitions in ProjectDetail
+- ShimmerButton for primary CTAs
+- Animated skeleton loading placeholders
+- ThemeProvider wrapper for MagicCard compatibility
+
+Infrastructure:
+- motion/react, Magic UI, and Aceternity UI components via shadcn registry
+- New components exported from @workspace/ui: MagicCard, ShimmerButton,
+  Marquee, AnimatedList, Spotlight, WobbleCard, BackgroundBeamsWithCollision
+- Fixed CSS module type resolution by removing unused ?inline export

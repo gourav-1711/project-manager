@@ -1,5 +1,8 @@
 /* @workspace/ui — shared shadcn-based components */
 
+// Context providers
+export { ThemeProvider } from "next-themes";
+
 // Components
 export { Button, buttonVariants } from "./components/ui/button";
 export {
@@ -28,8 +31,16 @@ export {
 export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "./components/ui/tooltip";
 export { Toaster } from "./components/ui/sonner";
 
-// Styles (import in the app's entry CSS)
-export { default as styles } from "./styles.css?inline";
+// Animated components (Magic UI)
+export { ShimmerButton, type ShimmerButtonProps } from "./components/ui/shimmer-button";
+export { MagicCard } from "./components/ui/magic-card";
+export { Marquee } from "./components/ui/marquee";
+export { AnimatedList, AnimatedListItem } from "./components/ui/animated-list";
+
+// Animated components (Aceternity UI)
+export { Spotlight } from "./components/ui/spotlight";
+export { WobbleCard } from "./components/ui/wobble-card";
+export { BackgroundBeamsWithCollision } from "./components/ui/background-beams-with-collision";
 
 // Utilities
 export { cn } from "./lib/utils";

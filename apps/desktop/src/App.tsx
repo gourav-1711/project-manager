@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { Toaster } from "@workspace/ui";
-import { Button } from "@workspace/ui";
+import { Toaster, Button, ShimmerButton, ThemeProvider } from "@workspace/ui";
 import { FolderOpen, Settings } from "lucide-react";
 import { useProjects } from "@/hooks/useProjects";
 import type { Project } from "@workspace/types";
@@ -15,7 +14,9 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 function App() {
   return (
     <ErrorBoundary>
-      <AppContent />
+      <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
+        <AppContent />
+      </ThemeProvider>
     </ErrorBoundary>
   );
 }
@@ -58,23 +59,38 @@ function AppContent() {
           >
             <Settings className="size-4" />
           </Button>
-          <Button onClick={() => setAddOpen(true)}>
-            <FolderOpen className="size-4" />
+          <ShimmerButton
+            shimmerColor="rgba(255,255,255,0.3)"
+            background="hsl(var(--primary))"
+            borderRadius="8px"
+            shimmerSize="0.1em"
+            className="h-9 px-4 text-xs font-medium"
+            onClick={() => setAddOpen(true)}
+          >
+            <FolderOpen className="mr-1.5 size-4" />
             Add Project
-          </Button>
+          </ShimmerButton>
         </div>
       </header>
 
       {loading ? (
-        <p className="text-sm text-muted-foreground">Loading projects…</p>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div
+              key={i}
+              className="h-40 animate-pulse rounded-xl bg-muted/50"
+            />
+          ))}
+        </div>
       ) : projects.length === 0 ? (
         <EmptyState onAdd={() => setAddOpen(true)} />
       ) : (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {projects.map((project) => (
+          {projects.map((project, index) => (
             <ProjectCard
               key={project.id}
               project={project}
+              index={index}
               onEdit={setEditing}
               onDelete={setDeleting}
               onOpen={setSelected}
