@@ -4,7 +4,7 @@ import { FolderOpen } from "lucide-react";
 /** Shown when the registry is empty — clear call to action. */
 export function EmptyState({ onAdd }: { onAdd: () => void }) {
   return (
-    <div className="flex flex-col items-center justify-center gap-4 rounded-lg border border-dashed py-20 text-center">
+    <div className="glass-subtle flex flex-col items-center justify-center gap-4 rounded-lg border border-dashed py-20 text-center">
       <FolderOpen className="size-10 text-muted-foreground" />
       <div className="flex flex-col gap-1">
         <p className="text-lg font-medium">No projects yet</p>

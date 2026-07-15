@@ -423,11 +423,103 @@ async fn get_shared_items(
 }
 
 // ---------------------------------------------------------------------------
+// Panic hook — writes crash logs to a file so the user can diagnose
+// why the app failed to start.
+// ---------------------------------------------------------------------------
+
+fn init_crash_log() {
+    use std::sync::OnceLock;
+    static INIT: OnceLock<()> = OnceLock::new();
+    INIT.get_or_init(|| {
+        let log_dir = std::env::temp_dir().join("dev-project-organizer");
+        let _ = std::fs::create_dir_all(&log_dir);
+        let log_path = log_dir.join("crash.log");
+
+        std::panic::set_hook(Box::new(move |info| {
+            let msg = if let Some(s) = info.payload().downcast_ref::<&str>() {
+                s.to_string()
+            } else if let Some(s) = info.payload().downcast_ref::<String>() {
+                s.clone()
+            } else {
+                format!("{:?}", info.payload())
+            };
+            let location = info
+                .location()
+                .map(|l| format!("{}:{}:{}", l.file(), l.line(), l.column()))
+                .unwrap_or_default();
+            let entry = format!(
+                "[{}] PANIC at {}: {}\n",
+                chrono_humane_now(),
+                location,
+                msg
+            );
+            // Try to append to the log file; if that fails, try writing a new one
+            if std::fs::OpenOptions::new()
+                .create(true)
+                .append(true)
+                .open(&log_path)
+                .and_then(|f| {
+                    use std::io::Write;
+                    let mut f = std::io::BufWriter::new(f);
+                    f.write_all(entry.as_bytes())
+                })
+                .is_err()
+            {
+                let _ = std::fs::write(&log_path, &entry);
+            }
+        }));
+    });
+}
+
+fn chrono_humane_now() -> String {
+    use std::time::{SystemTime, UNIX_EPOCH};
+    let d = SystemTime::now().duration_since(UNIX_EPOCH).unwrap_or_default();
+    let secs = d.as_secs();
+    let time_secs = secs % 86400;
+    let hours = time_secs / 3600;
+    let minutes = (time_secs % 3600) / 60;
+    let seconds = time_secs % 60;
+
+    let days = secs / 86400;
+    let mut y = 1970i64;
+    let mut d = days as i64;
+    loop {
+        let yd = if is_leap(y) { 366 } else { 365 };
+        if d < yd {
+            break;
+        }
+        d -= yd;
+        y += 1;
+    }
+    let mdays: &[i64] = if is_leap(y) {
+        &[31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+    } else {
+        &[31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+    };
+    let mut m = 1;
+    for &md in mdays {
+        if d < md {
+            break;
+        }
+        d -= md;
+        m += 1;
+    }
+    format!("{:04}-{:02}-{:02}T{:02}:{:02}:{:02}Z", y, m, d + 1, hours, minutes, seconds)
+}
+
+fn is_leap(year: i64) -> bool {
+    (year % 4 == 0 && year % 100 != 0) || year % 400 == 0
+}
+
+// ---------------------------------------------------------------------------
 // App bootstrap
 // ---------------------------------------------------------------------------
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+    // Capture any startup panics to a log file
+    init_crash_log();
+
     tauri::Builder::default()
         .plugin(tauri_plugin_autostart::init(tauri_plugin_autostart::MacosLauncher::LaunchAgent, None::<Vec<&str>>))
         .plugin(tauri_plugin_opener::init())
@@ -452,53 +544,63 @@ pub fn run() {
 
             // Use the default window icon for the tray, or a fallback.
             let icon = app.default_window_icon().cloned().unwrap_or_else(|| {
-                tauri::image::Image::new_owned(
-                    std::iter::repeat([42u8, 42, 42, 255]).flatten().take(32 * 32 * 4).collect(),
-                    32,
-                    32,
-                )
+                // Create a tiny valid RGBA image as fallback
+                let pixels: Vec<u8> = std::iter::repeat([99u8, 102, 241, 255])
+                    .flatten()
+                    .take(32 * 32 * 4)
+                    .collect();
+                tauri::image::Image::new_owned(pixels, 32, 32)
             });
 
-            // Build tray menu items.
-            let show = MenuItem::with_id(app, "show", "Show Window", true, None::<&str>)?;
-            let quit = MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?;
-            let menu = Menu::with_items(app, &[&show, &quit])?;
+            // Build tray — if it fails (e.g. on headless/sandboxed systems),
+            // log and continue without tray rather than crashing.
+            let tray_result = (|| -> Result<(), Box<dyn std::error::Error>> {
+                let show = MenuItem::with_id(app, "show", "Show Window", true, None::<&str>)?;
+                let quit = MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?;
+                let menu = Menu::with_items(app, &[&show, &quit])?;
 
-            TrayIconBuilder::new()
-                .icon(icon)
-                .tooltip("Dev Project Organizer")
-                .menu(&menu)
-                .on_menu_event(|app, event| match event.id().as_ref() {
-                    "show" => {
-                        if let Some(window) = app.get_webview_window("main") {
-                            let _ = window.show();
-                            let _ = window.set_focus();
-                        }
-                    }
-                    "quit" => {
-                        app.exit(0);
-                    }
-                    _ => {}
-                })
-                .on_tray_icon_event(|tray, event| {
-                    if let TrayIconEvent::Click {
-                        button: MouseButton::Left,
-                        button_state: MouseButtonState::Up,
-                        ..
-                    } = event
-                    {
-                        let app = tray.app_handle();
-                        if let Some(window) = app.get_webview_window("main") {
-                            if window.is_visible().unwrap_or(false) {
-                                let _ = window.hide();
-                            } else {
+                TrayIconBuilder::new()
+                    .icon(icon)
+                    .tooltip("Dev Project Organizer")
+                    .menu(&menu)
+                    .on_menu_event(|app, event| match event.id().as_ref() {
+                        "show" => {
+                            if let Some(window) = app.get_webview_window("main") {
                                 let _ = window.show();
                                 let _ = window.set_focus();
                             }
                         }
-                    }
-                })
-                .build(app)?;
+                        "quit" => {
+                            app.exit(0);
+                        }
+                        _ => {}
+                    })
+                    .on_tray_icon_event(|tray, event| {
+                        if let TrayIconEvent::Click {
+                            button: MouseButton::Left,
+                            button_state: MouseButtonState::Up,
+                            ..
+                        } = event
+                        {
+                            let app = tray.app_handle();
+                            if let Some(window) = app.get_webview_window("main") {
+                                if window.is_visible().unwrap_or(false) {
+                                    // Don't hide on left-click when visible — show the window instead
+                                } else {
+                                    let _ = window.show();
+                                    let _ = window.set_focus();
+                                }
+                            }
+                        }
+                    })
+                    .build(app)?;
+                Ok(())
+            })();
+
+            if let Err(e) = tray_result {
+                // Log but don't crash — the app works fine without a tray icon
+                eprintln!("[startup] Tray icon not created: {}", e);
+            }
 
             Ok(())
         })

@@ -1,3 +1,4 @@
+import { motion } from "motion/react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Button, Input, Textarea, Label } from "@workspace/ui";
@@ -75,13 +76,20 @@ export function TimelineTab({ projectId }: { projectId: string }) {
                 <div className="flex-1 border-t" />
               </div>
               <div className="flex flex-col gap-1.5">
-                {monthItems.map((item) => (
-                  <TimelineRow
+                {monthItems.map((item, i) => (
+                  <motion.div
                     key={item.id}
-                    item={item}
-                    onStatusChange={setStatus}
-                    onRemove={remove}
-                  />
+                    initial={{ opacity: 0, x: -12 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.3, delay: i * 0.04, ease: [0.16, 1, 0.3, 1] }}
+                    layout
+                  >
+                    <TimelineRow
+                      item={item}
+                      onStatusChange={setStatus}
+                      onRemove={remove}
+                    />
+                  </motion.div>
                 ))}
               </div>
             </div>
@@ -148,7 +156,7 @@ function AddMilestoneForm({
   return (
     <form
       onSubmit={submit}
-      className="flex flex-col gap-3 rounded-lg border bg-card p-4"
+      className="flex flex-col gap-3 rounded-lg border glass-subtle p-4"
     >
       <div className="flex flex-col gap-2">
         <Label htmlFor="tl-title">Title</Label>
@@ -247,7 +255,7 @@ function TimelineRow({
   return (
     <div
       className={cn(
-        "group relative flex items-start gap-3 rounded-md border bg-card px-3 py-2.5 transition-colors",
+        "group relative flex items-start gap-3 rounded-lg border glass-inset px-3 py-2.5 transition-all duration-200 hover:bg-white/[0.03]",
         item.status === "done" && "opacity-60",
       )}
     >

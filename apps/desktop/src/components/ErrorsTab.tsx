@@ -1,3 +1,4 @@
+import { motion } from "motion/react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Button, SmoothInput } from "@workspace/ui";
@@ -118,11 +119,12 @@ export function ErrorsTab({ projectId }: { projectId: string }) {
             : "Nothing here."}
         </p>
       ) : (
-        <ul className="flex flex-col gap-1">
-          {visible.map((err) => (
+        <ul className="flex flex-col gap-1.5">
+          {visible.map((err, i) => (
             <ErrorRow
               key={err.id}
               error={err}
+              index={i}
               onFix={fix}
               onRemove={remove}
             />
@@ -137,13 +139,21 @@ function ErrorRow({
   error,
   onFix,
   onRemove,
+  index = 0,
 }: {
   error: ProjectError;
   onFix: (id: string) => Promise<void>;
   onRemove: (id: string) => Promise<void>;
+  index?: number;
 }) {
   return (
-    <li className="flex items-center gap-2 rounded-md border bg-card px-2 py-1.5">
+    <motion.li
+      initial={{ opacity: 0, x: -12 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.3, delay: index * 0.04, ease: [0.16, 1, 0.3, 1] }}
+      layout
+      className="flex items-center gap-2 rounded-lg border glass-inset px-3 py-2 transition-all duration-200 hover:bg-white/[0.03]"
+    >
       <span
         className={cn(
           "rounded px-1.5 text-xs font-medium",
@@ -187,6 +197,6 @@ function ErrorRow({
       >
         <Trash2 className="size-4" />
       </Button>
-    </li>
+    </motion.li>
   );
 }

@@ -7,7 +7,6 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-  MagicCard,
 } from "@workspace/ui";
 import { TOOL_META, launchTool, type ToolMeta } from "@/lib/launch";
 import type { Project } from "@workspace/types";
@@ -85,79 +84,72 @@ export function ProjectCard({
       }}
       layout
     >
-      <MagicCard
-        className="rounded-xl"
-        gradientSize={250}
-        gradientColor="rgba(129,140,248,0.15)"
-        gradientOpacity={0.6}
-      >
-        <Card className="flex flex-col gap-3 border-0 bg-transparent p-4 shadow-none">
-          <CardHeader className="p-0">
-            <div className="flex items-center gap-1">
-              <CardTitle
-                className="min-w-0 flex-1 truncate text-base"
-                title={project.name}
+      <Card className="flex flex-col gap-3 border-0 bg-transparent p-4 shadow-none glass-card">
+        <CardHeader className="p-0">
+          <div className="flex items-center gap-1">
+            <CardTitle
+              className="min-w-0 flex-1 truncate text-base"
+              title={project.name}
+            >
+              {project.name}
+            </CardTitle>
+            <motion.div
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+            >
+              <Button
+                variant="ghost"
+                size="icon"
+                className="-mr-1.5 size-7 shrink-0"
+                title="Open project detail"
+                onClick={() => onOpen(project)}
               >
-                {project.name}
-              </CardTitle>
-              <motion.div
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
+                <ChevronRight className="size-4" />
+              </Button>
+            </motion.div>
+          </div>
+          <CardDescription className="truncate text-xs" title={project.path}>
+            {project.path}
+          </CardDescription>
+          <CardAction className="flex gap-1">
+            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="size-7"
+                title="Edit project"
+                onClick={() => onEdit(project)}
               >
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="-mr-1.5 size-7 shrink-0"
-                  title="Open project detail"
-                  onClick={() => onOpen(project)}
-                >
-                  <ChevronRight className="size-4" />
-                </Button>
-              </motion.div>
-            </div>
-            <CardDescription className="truncate text-xs" title={project.path}>
-              {project.path}
-            </CardDescription>
-            <CardAction className="flex gap-1">
-              <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="size-7"
-                  title="Edit project"
-                  onClick={() => onEdit(project)}
-                >
-                  <Pencil className="size-4" />
-                </Button>
-              </motion.div>
-              <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="size-7 text-destructive hover:text-destructive"
-                  title="Remove project"
-                  onClick={() => onDelete(project)}
-                >
-                  <Trash2 className="size-4" />
-                </Button>
-              </motion.div>
-            </CardAction>
-          </CardHeader>
-          <CardContent className="flex flex-col gap-3 p-0">
-            {project.description && (
-              <p className="line-clamp-2 text-sm text-muted-foreground">
-                {project.description}
-              </p>
-            )}
-            <QuickLaunch project={project} />
-            <p className="text-xs text-muted-foreground">
-              {project.lastOpenedAt
-                ? `Last opened ${new Date(project.lastOpenedAt).toLocaleString()}`
-                : "Never opened"}
+                <Pencil className="size-4" />
+              </Button>
+            </motion.div>
+            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="size-7 text-destructive hover:text-destructive"
+                title="Remove project"
+                onClick={() => onDelete(project)}
+              >
+                <Trash2 className="size-4" />
+              </Button>
+            </motion.div>
+          </CardAction>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-3 p-0">
+          {project.description && (
+            <p className="line-clamp-2 text-sm text-muted-foreground">
+              {project.description}
             </p>
-          </CardContent>
-        </Card>
-      </MagicCard>
+          )}
+          <QuickLaunch project={project} />
+          <p className="text-xs text-muted-foreground">
+            {project.lastOpenedAt
+              ? `Last opened ${new Date(project.lastOpenedAt).toLocaleString()}`
+              : "Never opened"}
+          </p>
+        </CardContent>
+      </Card>
     </motion.div>
   );
 }

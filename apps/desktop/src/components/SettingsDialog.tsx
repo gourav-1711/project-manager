@@ -59,7 +59,7 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="dialog-glass">
         <DialogHeader>
           <DialogTitle>Settings</DialogTitle>
           <DialogDescription>
@@ -69,7 +69,7 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
 
         <div className="flex flex-col gap-4 py-2">
           {/* ── Launch on startup ── */}
-          <div className="flex items-center justify-between gap-4 rounded-lg border bg-card p-4">
+          <div className="flex items-center justify-between gap-4 rounded-lg border glass-subtle p-4">
             <div className="flex items-start gap-3">
               <MonitorSmartphone className="mt-0.5 size-5 text-muted-foreground" />
               <div>
@@ -105,7 +105,7 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
           </div>
 
           {/* ── Tray info (read-only) ── */}
-          <div className="flex items-start gap-3 rounded-lg border bg-muted/50 p-4">
+          <div className="flex items-start gap-3 rounded-lg border glass-subtle p-4">
             <SunMoon className="mt-0.5 size-5 text-muted-foreground" />
             <div>
               <p className="text-sm font-medium">System tray</p>

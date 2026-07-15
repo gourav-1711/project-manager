@@ -136,8 +136,7 @@ export function ShareDialog({
   const isServerBusy = serverStatus === "starting";
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
+    <Dialog open={open} onOpenChange={onOpenChange}>            <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg dialog-glass">
         <DialogHeader>
           <DialogTitle>Share & Export</DialogTitle>
           <DialogDescription>
@@ -147,7 +146,7 @@ export function ShareDialog({
 
         <div className="flex flex-col gap-6 py-2">
           {/* ── Project path QR + export ── */}
-          <div className="flex flex-col items-center gap-3 rounded-lg border bg-card p-4">
+          <div className="flex flex-col items-center gap-3 rounded-lg border glass-subtle p-4">
             <div className="flex items-center gap-2">
               <Scan className="size-4 text-muted-foreground" />
               <span className="text-sm font-medium">Project path</span>
@@ -172,7 +171,7 @@ export function ShareDialog({
           </div>
 
           {/* ── Mobile share server ── */}
-          <div className="flex flex-col gap-3 rounded-lg border bg-card p-4">
+          <div className="flex flex-col gap-3 rounded-lg border glass-subtle p-4">
             <div className="flex items-center gap-2">
               <Smartphone className="size-4 text-muted-foreground" />
               <span className="text-sm font-medium">Send to phone</span>

@@ -1,5 +1,8 @@
-fix: remove unnecessary `mut` on stdout/stderr variables in run_npx_install
+fix: add crash log diagnostics and resilient startup error handling
 
-Fixes Rust compiler warnings `variable does not need to be mutable`
-for `stdout` and `stderr` on lines 285-286 of lib.rs. These variables
-are consumed by `.take()` which moves the value, so `mut` is not needed.
+- Add global panic hook that writes crash details to %TEMP%/dev-project-organizer/crash.log
+  (no external deps — timestamp computed manually)
+- Make tray icon creation resilient: wrap in fallible closure so a tray
+  failure (headless/sandboxed system) logs the error but doesn't crash
+- Fix tray left-click: when window is already visible, don't hide it
+- Add startup eprintln logging for tray failures

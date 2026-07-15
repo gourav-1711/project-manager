@@ -74,7 +74,7 @@ export function AddProjectDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="dialog-glass">
         <DialogHeader>
           <DialogTitle>Add Project</DialogTitle>
           <DialogDescription>
@@ -92,7 +92,7 @@ export function AddProjectDialog({
                 readOnly
                 value={path}
                 placeholder="No folder selected"
-                className="flex-1"
+                className="flex-1 glass-inset"
               />
               <Button variant="outline" onClick={pickFolder} type="button">
                 Browse…
@@ -188,7 +188,7 @@ export function EditProjectDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="dialog-glass">
         <DialogHeader>
           <DialogTitle>Edit Project</DialogTitle>
           <DialogDescription>

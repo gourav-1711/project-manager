@@ -17,7 +17,7 @@ export function Tabs({
     <div
       role="tablist"
       aria-orientation="horizontal"
-      className="flex gap-1 border-b"
+      className="glass-subtle flex gap-1 rounded-xl p-1.5 border-0"
     >
       {tabs.map((tab) => {
         const selected = tab.id === active;
@@ -29,10 +29,10 @@ export function Tabs({
             aria-selected={selected}
             onClick={() => onChange(tab.id)}
             className={cn(
-              "border-b-2 px-3 py-2 text-sm font-medium transition-colors",
+              "rounded-lg px-3 py-1.5 text-sm font-medium transition-all duration-200",
               selected
-                ? "border-foreground text-foreground"
-                : "border-transparent text-muted-foreground hover:text-foreground",
+                ? "bg-background/60 text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground hover:bg-background/20",
             )}
           >
             {tab.label}

@@ -1,3 +1,4 @@
+import { motion } from "motion/react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Button, SmoothInput } from "@workspace/ui";
@@ -89,9 +90,9 @@ export function TodosTab({ projectId }: { projectId: string }) {
           {todos.length === 0 ? "No todos yet — add one above." : "Nothing here."}
         </p>
       ) : (
-        <ul className="flex flex-col gap-1">
-          {visible.map((todo) => (
-            <TodoRow key={todo.id} todo={todo} onToggle={setDone} onRemove={remove} />
+        <ul className="flex flex-col gap-1.5">
+          {visible.map((todo, i) => (
+            <TodoRow key={todo.id} todo={todo} index={i} onToggle={setDone} onRemove={remove} />
           ))}
         </ul>
       )}
@@ -103,50 +104,59 @@ function TodoRow({
   todo,
   onToggle,
   onRemove,
+  index = 0,
 }: {
   todo: Todo;
   onToggle: (id: string, done: boolean) => Promise<void>;
   onRemove: (id: string) => Promise<void>;
+  index?: number;
 }) {
   return (
-    <li className="flex items-center gap-2 rounded-md border bg-card px-2 py-1.5">
-      <input
-        type="checkbox"
-        className="size-4 accent-foreground"
-        checked={todo.done}
-        onChange={(e) => onToggle(todo.id, e.target.checked)}
-        aria-label={`Mark "${todo.title}" ${todo.done ? "active" : "done"}`}
-      />
-      <span
-        className={cn(
-          "flex-1 text-sm",
-          todo.done && "text-muted-foreground line-through",
-        )}
-      >
-        {todo.title}
-      </span>
-      <Button
-        variant="ghost"
-        size="icon"
-        className="size-7"
-        title={todo.done ? "Mark active" : "Mark done"}
-        onClick={() => onToggle(todo.id, !todo.done)}
-      >
-        {todo.done ? (
-          <RotateCcw className="size-4" />
-        ) : (
-          <Check className="size-4" />
-        )}
-      </Button>
-      <Button
-        variant="ghost"
-        size="icon"
-        className="size-7 text-destructive hover:text-destructive"
-        title="Delete todo"
-        onClick={() => onRemove(todo.id)}
-      >
-        <Trash2 className="size-4" />
-      </Button>
-    </li>
+    <motion.li
+      initial={{ opacity: 0, x: -12 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.3, delay: index * 0.04, ease: [0.16, 1, 0.3, 1] }}
+      layout
+    >
+      <div className="flex items-center gap-2 rounded-lg border glass-inset px-3 py-2 transition-all duration-200 hover:bg-white/[0.03]">
+        <input
+          type="checkbox"
+          className="size-4 accent-foreground"
+          checked={todo.done}
+          onChange={(e) => onToggle(todo.id, e.target.checked)}
+          aria-label={`Mark "${todo.title}" ${todo.done ? "active" : "done"}`}
+        />
+        <span
+          className={cn(
+            "flex-1 text-sm",
+            todo.done && "text-muted-foreground line-through",
+          )}
+        >
+          {todo.title}
+        </span>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="size-7"
+          title={todo.done ? "Mark active" : "Mark done"}
+          onClick={() => onToggle(todo.id, !todo.done)}
+        >
+          {todo.done ? (
+            <RotateCcw className="size-4" />
+          ) : (
+            <Check className="size-4" />
+          )}
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="size-7 text-destructive hover:text-destructive"
+          title="Delete todo"
+          onClick={() => onRemove(todo.id)}
+        >
+          <Trash2 className="size-4" />
+        </Button>
+      </div>
+    </motion.li>
   );
 }

@@ -44,7 +44,7 @@ export function DeleteConfirm({
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent>
+      <AlertDialogContent className="dialog-glass">
         <AlertDialogHeader>
           <AlertDialogTitle>Remove “{project.name}”?</AlertDialogTitle>
           <AlertDialogDescription>

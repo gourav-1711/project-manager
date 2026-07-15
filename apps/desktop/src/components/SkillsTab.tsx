@@ -1,3 +1,4 @@
+import { motion } from "motion/react";
 import { useSkills } from "@/hooks/useSkills";
 import { Button } from "@workspace/ui";
 import { cn } from "@workspace/ui";
@@ -75,15 +76,22 @@ export function SkillsTab({ projectId }: { projectId: string }) {
         </p>
       ) : (
         <div className="flex flex-col gap-2">
-          {visible.map((skill) => (
-            <SkillCard
+          {visible.map((skill, i) => (
+            <motion.div
               key={skill.id}
-              skill={skill}
-              installed={isInstalled(skill.id)}
-              installState={installState[skill.id] ?? "idle"}
-              onInstall={install}
-              onUninstall={uninstall}
-            />
+              initial={{ opacity: 0, x: -12 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.3, delay: i * 0.03, ease: [0.16, 1, 0.3, 1] }}
+              layout
+            >
+              <SkillCard
+                skill={skill}
+                installed={isInstalled(skill.id)}
+                installState={installState[skill.id] ?? "idle"}
+                onInstall={install}
+                onUninstall={uninstall}
+              />
+            </motion.div>
           ))}
         </div>
       )}
@@ -109,8 +117,8 @@ function SkillCard({
   return (
     <div
       className={cn(
-        "flex items-start gap-3 rounded-lg border bg-card p-3 transition-colors",
-        installed && "border-primary/30",
+        "flex items-start gap-3 rounded-lg border glass-inset p-3 transition-all duration-200 hover:bg-white/[0.03]",
+        installed && "border-primary/40",
       )}
     >
       <div className="min-w-0 flex-1">
