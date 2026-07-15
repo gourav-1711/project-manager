@@ -51,6 +51,32 @@ pub struct ServerController {
 }
 
 // ---------------------------------------------------------------------------
+// Temp directory cleanup
+// ---------------------------------------------------------------------------
+
+/// Delete temp files older than 24 hours to prevent accumulation.
+fn clean_old_temp_files() {
+    let temp_dir = std::env::temp_dir().join("dev-project-organizer-share");
+    if !temp_dir.exists() {
+        return;
+    }
+    let now = std::time::SystemTime::now();
+    let max_age = std::time::Duration::from_secs(86400); // 24 hours
+
+    if let Ok(entries) = std::fs::read_dir(&temp_dir) {
+        for entry in entries.flatten() {
+            if let Ok(metadata) = entry.metadata() {
+                if let Ok(modified) = metadata.modified() {
+                    if now.duration_since(modified).ok().map_or(false, |age| age > max_age) {
+                        let _ = std::fs::remove_file(entry.path());
+                    }
+                }
+            }
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------
 // Server lifecycle
 // ---------------------------------------------------------------------------
 
@@ -58,6 +84,9 @@ pub struct ServerController {
 ///
 /// Returns the full URL (e.g. `http://192.168.1.42:54321`) on success.
 pub async fn start(app_handle: AppHandle) -> Result<ServerController, String> {
+    // Clean up stale temp files from previous sessions
+    clean_old_temp_files();
+
     // Detect LAN IP
     let ip =
         local_ip_address::local_ip().map_err(|e| format!("Failed to detect LAN IP: {}", e))?;

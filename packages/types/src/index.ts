@@ -49,8 +49,6 @@ export type ToolId =
 // Todos (per-project)
 // ---------------------------------------------------------------------------
 
-export type TodoStatus = "active" | "done";
-
 export interface Todo {
   id: string;
   projectId: string;

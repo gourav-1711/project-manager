@@ -34,6 +34,11 @@ Thumbs.db
 # Tauri
 apps/desktop/src-tauri/target/
 
+# Windows reserved device names (can appear as artifacts from redirected commands)
+nul
+CON
+PRN
+
 # Landing
 apps/landing/.next/
 apps/landing/out/

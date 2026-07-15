@@ -9,7 +9,7 @@ import {
 } from "@workspace/ui";
 import { TOOL_META, launchTool, type ToolMeta } from "@/lib/launch";
 import type { Project } from "@workspace/types";
-import { useProjects } from "@/hooks/useProjects";
+import { touchLastOpened } from "@workspace/db";
 import {
   FolderOpen,
   Terminal,
@@ -30,11 +30,12 @@ const TOOL_ICONS: Record<ToolMeta["id"], LucideIcon> = {
 };
 
 export function QuickLaunch({ project }: { project: Project }) {
-  const { markOpened } = useProjects();
-
   async function handleLaunch(tool: ToolMeta) {
     const ok = await launchTool(tool, project.path);
-    if (ok) await markOpened(project.id);
+    if (ok) {
+      // Non-critical — fire-and-forget
+      touchLastOpened(project.id).catch(() => {});
+    }
   }
 
   return (

@@ -267,6 +267,14 @@ function Navbar() {
           <IconGithub className="size-4" />
           GitHub
         </a>
+        <a
+          href="https://github.com/gourav-1711/project-manager/releases"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="hidden text-sm text-muted-foreground transition-colors hover:text-foreground sm:block"
+        >
+          Releases
+        </a>
         <ThemeToggle theme={theme} onToggle={toggle} />
         <a
           href="#download"
@@ -518,6 +526,14 @@ function Footer() {
           >
             <IconGithub className="size-4" />
             GitHub
+          </a>
+          <a
+            href="https://github.com/gourav-1711/project-manager/releases"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="transition-colors hover:text-foreground"
+          >
+            Releases
           </a>
           <span className="text-border">·</span>
           <span>Open source · MIT</span>

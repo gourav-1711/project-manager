@@ -1,83 +1,78 @@
-# DOX framework
+# AI Agent Skills System
 
-- DOX is highly performant AGENTS.md hierarchy installed here
-- Agent must follow DOX instructions across any edits
+The Dev Project Organizer includes a **Skills Manager** that lets you browse and install AI agent skills into any project with one click. Skills are reusable, self-contained instructions that extend what an AI coding agent can do.
 
-## Core Contract
+## Overview
 
-- AGENTS.md files are binding work contracts for their subtrees
-- Work products, source materials, instructions, records, assets, and durable docs must stay understandable from the nearest applicable AGENTS.md plus every parent AGENTS.md above it
+Skills live in the `.agents/skills/` directory of a project. Each skill is a folder containing a `SKILL.md` file (the instructions) plus optional references, scripts, and configurations.
 
-## Read Before Editing
+The app maintains a **curated catalog** of skills in `packages/db/skills.json`. From the desktop app's Skills tab, you can browse the catalog, install skills into a project, or remove them.
 
-1. Read the root AGENTS.md
-2. Identify every file or folder you expect to touch
-3. Walk from the repository root to each target path
-4. Read every AGENTS.md found along each route
-5. If a parent AGENTS.md lists a child AGENTS.md whose scope contains the path, read that child and continue from there
-6. Use the nearest AGENTS.md as the local contract and parent docs for repo-wide rules
-7. If docs conflict, the closer doc controls local work details, but no child doc may weaken DOX
+## How It Works
 
-Do not rely on memory. Re-read the applicable DOX chain in the current session before editing.
+1. **Browse** — The Skills tab shows the full catalog with name, description, and npx command
+2. **Install** — Click "Add" to run `npx <command>` in the project directory via the Rust backend
+3. **Track** — Installed skills are recorded in the `project_skills` SQLite table per project
+4. **Use** — Once installed, the skill's `SKILL.md` is available for AI agents in that project
 
-## Update After Editing
+## Current Catalog
 
-Every meaningful change requires a DOX pass before the task is done.
+| Skill | Description |
+|---|---|
+| **Ponytail** | Forces minimal, stdlib-first solutions. YAGNI enforcement. |
+| **shadcn/ui** | Build UI components — manage, search, compose design systems. |
+| **Design Taste** | Anti-slop frontend design — ships interfaces that don't look templated. |
+| **Agent Browser** | Browser automation CLI — navigate, fill forms, click, scrape. |
+| **Prisma Client API** | Prisma ORM queries, filters, CRUD operations reference. |
+| **Cloudflare** | Workers, Pages, KV, D1, R2, Durable Objects, WAF, and more. |
+| **SEO Optimizer** | Meta tags, structured data, sitemaps, OG cards, ranking. |
+| **Security Best Practices** | Language/framework security reviews (Python, JS/TS, Go). |
 
-Update the closest owning AGENTS.md when a change affects:
+## Adding a New Skill
 
-- purpose, scope, ownership, or responsibilities
-- durable structure, contracts, workflows, or operating rules
-- required inputs, outputs, permissions, constraints, side effects, or artifacts
-- user preferences about behavior, communication, process, organization, or quality
-- AGENTS.md creation, deletion, move, rename, or index contents
+1. Find or create the skill's `npx` command (e.g. `codebuff/skills/my-skill` or `my-skill@latest`)
+2. Add an entry to `packages/db/skills.json`:
+   ```json
+   {
+     "id": "my-skill",
+     "name": "My Skill",
+     "description": "What it does.",
+     "npxCommand": "my-skill@latest"
+   }
+   ```
+3. The skill will appear in the Skills tab on next reload
 
-Update parent docs when parent-level structure, ownership, workflow, or child index changes. Update child docs when parent changes alter local rules. Remove stale or contradictory text immediately. Small edits that do not change behavior or contracts may leave docs unchanged, but the DOX pass still must happen.
+## Technical Details
 
-## Hierarchy
+### Database
 
-- Root AGENTS.md is the DOX rail: project-wide instructions, global preferences, durable workflow rules, and the top-level Child DOX Index
-- Child AGENTS.md files own domain-specific instructions and their own Child DOX Index
-- Each parent explains what its direct children cover and what stays owned by the parent
-- The closer a doc is to the work, the more specific and practical it must be
+```sql
+-- Tracks which skills are installed per project
+CREATE TABLE project_skills (
+  project_id TEXT NOT NULL,
+  skill_id TEXT NOT NULL,
+  added_at TEXT NOT NULL,
+  PRIMARY KEY (project_id, skill_id),
+  FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE
+);
+```
 
-## Child Doc Shape
+### Backend
 
-- Create a child AGENTS.md when a folder becomes a durable boundary with its own purpose, rules, responsibilities, workflow, materials, or quality standards
-- Work Guidance must reflect the current standards of the project or user instructions; if there are no specific standards or instructions yet, leave it empty
-- Verification must reflect an existing check; if no verification framework exists yet, leave it empty and update it when one exists
+The Rust `install_skill` command (in `src-tauri/src/lib.rs`):
+- Runs `npx <command>` in the project directory with a 120-second timeout
+- Captures stdout/stderr for error reporting
+- Kills the process on timeout
+- Returns `{ success, error }` to the frontend
 
-Default section order:
-- Purpose
-- Ownership
-- Local Contracts
-- Work Guidance
-- Verification
-- Child DOX Index
+### Frontend
 
-## Style
+The `useSkills` hook (in `apps/desktop/src/hooks/useSkills.ts`):
+- Loads the static catalog
+- Fetches per-project install state from SQLite
+- Manages install state transitions: idle → installing → success/error
+- Shows toast notifications for success/failure
 
-- Keep docs concise, current, and operational
-- Document stable contracts, not diary entries
-- Put broad rules in parent docs and concrete details in child docs
-- Prefer direct bullets with explicit names
-- Do not duplicate rules across many files unless each scope needs a local version
-- Delete stale notes instead of explaining history
-- Trim obvious statements, repeated rules, misplaced detail, and warnings for risks that no longer exist
+## Installed Skills
 
-## Closeout
-
-1. Re-check changed paths against the DOX chain
-2. Update nearest owning docs and any affected parents or children
-3. Refresh every affected Child DOX Index
-4. Remove stale or contradictory text
-5. Run existing verification when relevant
-6. Report any docs intentionally left unchanged and why
-
-## User Preferences
-
-When the user requests a durable behavior change, record it here or in the relevant child AGENTS.md
-
-## Child DOX Index
-
-This project is not yet indexed. Before continuing you must scan the project, build the DOX tree and replace this message with the actual index. Go deep and scan files recursively to properly evaluate complexity and create nested DOX files where needed.
+The project comes with several skills already installed in `.agents/skills/`. These are third-party packages managed via `npx skills add` — not part of the project's own source code.
