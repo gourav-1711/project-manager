@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { toast } from "sonner";
-import { Button, Input } from "@workspace/ui";
+import { Button, SmoothInput } from "@workspace/ui";
 import { cn } from "@workspace/ui";
 import { useErrors } from "@/hooks/useErrors";
 import { Check, Trash2 } from "lucide-react";
@@ -61,13 +61,13 @@ export function ErrorsTab({ projectId }: { projectId: string }) {
         className="flex flex-wrap items-end gap-2"
         aria-label="Add error"
       >
-        <Input
-          className="max-w-sm flex-1"
+        <SmoothInput
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           placeholder="What's broken?"
           disabled={busy}
           aria-label="Error description"
+          wrapperClassName="max-w-full flex-1 p-3"
         />
         <div className="flex gap-1">
           {SEVERITIES.map((s) => (

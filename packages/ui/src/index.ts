@@ -31,6 +31,9 @@ export {
 export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "./components/ui/tooltip";
 export { Toaster } from "./components/ui/sonner";
 
+// Skiper UI (smooth input)
+export { SmoothInput, Skiper106 } from "./components/ui/skiper-ui/skiper106";
+
 // Animated components (Magic UI)
 export { ShimmerButton, type ShimmerButtonProps } from "./components/ui/shimmer-button";
 export { MagicCard } from "./components/ui/magic-card";

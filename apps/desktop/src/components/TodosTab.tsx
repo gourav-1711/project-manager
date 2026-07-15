@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { toast } from "sonner";
-import { Button, Input } from "@workspace/ui";
+import { Button, SmoothInput } from "@workspace/ui";
 import { useTodos } from "@/hooks/useTodos";
 import { Trash2, Check, RotateCcw } from "lucide-react";
 import { cn } from "@workspace/ui";
@@ -51,12 +51,13 @@ export function TodosTab({ projectId }: { projectId: string }) {
         className="flex gap-2"
         aria-label="Add todo"
       >
-        <Input
+        <SmoothInput
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="What needs doing?"
           disabled={busy}
           aria-label="Todo title"
+          wrapperClassName="max-w-full p-3"
         />
         <Button type="submit" disabled={busy || !title.trim()}>
           Add

@@ -282,8 +282,8 @@ fn run_npx_install(request: &InstallSkillRequest) -> Result<InstallResult, Strin
         .spawn()
         .map_err(|e| format!("Failed to start npx: {}", e))?;
 
-    let mut stdout = child.stdout.take().expect("piped stdout");
-    let mut stderr = child.stderr.take().expect("piped stderr");
+    let stdout = child.stdout.take().expect("piped stdout");
+    let stderr = child.stderr.take().expect("piped stderr");
     let buffer = Arc::new(Mutex::new(String::new()));
 
     let make_reader = |mut pipe: Box<dyn std::io::Read + Send>, prefix: &'static str| {

@@ -1,29 +1,5 @@
-feat: UI/UX enhancement — motion animations, Magic UI, and Aceternity UI
+fix: remove unnecessary `mut` on stdout/stderr variables in run_npx_install
 
-Adds premium visual design to the landing page and desktop app:
-
-Landing Page:
-- motion/react scroll-triggered entry animations (replacing IntersectionObserver)
-- Mouse-tracking parallax hero gradients with useMotionValue/useTransform
-- Animated scroll indicator and staggered hero reveal
-- Aceternity Spotlight decorative beam in hero
-- Aceternity BackgroundBeamsWithCollision animated beams in CTA section
-- Aceternity WobbleCard tilt-on-hover for stats card
-- Magic UI Marquee scrolling feature showcase (forward + reverse rows)
-- useScroll() for nav background (replacing raw scroll listener)
-- New Stats section with hover animations
-- Shimmer effect on CTA buttons
-
-Desktop App:
-- MagicCard spotlight cursor effect on project cards
-- Staggered card entry animation via motion
-- AnimatePresence tab transitions in ProjectDetail
-- ShimmerButton for primary CTAs
-- Animated skeleton loading placeholders
-- ThemeProvider wrapper for MagicCard compatibility
-
-Infrastructure:
-- motion/react, Magic UI, and Aceternity UI components via shadcn registry
-- New components exported from @workspace/ui: MagicCard, ShimmerButton,
-  Marquee, AnimatedList, Spotlight, WobbleCard, BackgroundBeamsWithCollision
-- Fixed CSS module type resolution by removing unused ?inline export
+Fixes Rust compiler warnings `variable does not need to be mutable`
+for `stdout` and `stderr` on lines 285-286 of lib.rs. These variables
+are consumed by `.take()` which moves the value, so `mut` is not needed.
