@@ -11,6 +11,12 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  # Rust compilation optimisations
+  CARGO_INCREMENTAL: "0"           # Disable incremental (avoids cache overhead in clean CI)
+  CARGO_NET_RETRY: "3"            # Retry network failures during crate downloads
+  RUST_BACKTRACE: "full"          # Full stack traces on panics for debugging
+
 jobs:
   build:
     runs-on: windows-latest
@@ -29,6 +35,11 @@ jobs:
         with:
           node-version: 22
           cache: "pnpm"
+
+      - name: Setup sccache (Rust compilation cache)
+        uses: mozilla-actions/sccache-action@v0.0.7
+        with:
+          version: "v0.9.1"
 
       - name: Setup Rust toolchain
         uses: actions-rust-lang/setup-rust-toolchain@v1
