@@ -12,9 +12,12 @@
   "app": {
     "windows": [
       {
+        "label": "main",
         "title": "Dev Project Organizer",
         "width": 900,
-        "height": 650
+        "height": 650,
+        "center": true,
+        "visible": true
       }
     ],
     "security": {
@@ -23,9 +26,7 @@
   },
   "plugins": {
     "sql": {
-      "preload": {
-        "db": "sqlite:dev-organizer.db"
-      }
+      "preloads": ["sqlite:dev-organizer.db"]
     }
   },
   "bundle": {

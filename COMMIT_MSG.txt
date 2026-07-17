@@ -1,8 +1,0 @@
-fix: add crash log diagnostics and resilient startup error handling
-
-- Add global panic hook that writes crash details to %TEMP%/dev-project-organizer/crash.log
-  (no external deps — timestamp computed manually)
-- Make tray icon creation resilient: wrap in fallible closure so a tray
-  failure (headless/sandboxed system) logs the error but doesn't crash
-- Fix tray left-click: when window is already visible, don't hide it
-- Add startup eprintln logging for tray failures
