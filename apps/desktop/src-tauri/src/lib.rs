@@ -17,6 +17,14 @@ use tokio::sync::Mutex;
 
 fn migrations() -> Vec<tauri_plugin_sql::Migration> {
     vec![
+        // Version 0: enable foreign key enforcement.
+        // SQLite defaults to OFF; the pragma must be set per-connection.
+        tauri_plugin_sql::Migration {
+            version: 0,
+            description: "enable_foreign_keys",
+            sql: "PRAGMA foreign_keys = ON;",
+            kind: tauri_plugin_sql::MigrationKind::Up,
+        },
         tauri_plugin_sql::Migration {
             version: 1,
             description: "create_projects_table",
@@ -407,21 +415,6 @@ async fn stop_share_server(
     }
 }
 
-/// Return all shared items received this session.
-#[tauri::command]
-async fn get_shared_items(
-    state: tauri::State<'_, ShareController>,
-) -> Result<Vec<share_server::SharedItem>, String> {
-    let guard = state.inner.lock().await;
-    match guard.as_ref() {
-        Some(controller) => {
-            let items = controller.items.lock().await;
-            Ok(items.clone())
-        }
-        None => Ok(Vec::new()),
-    }
-}
-
 // ---------------------------------------------------------------------------
 // Panic hook — writes crash logs to a file so the user can diagnose
 // why the app failed to start.
@@ -610,7 +603,6 @@ pub fn run() {
             install_skill,
             start_share_server,
             stop_share_server,
-            get_shared_items,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

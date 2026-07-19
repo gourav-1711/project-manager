@@ -122,6 +122,14 @@ export async function updateProject(
 /** Remove a project from the registry. Does NOT touch files on disk. */
 export async function deleteProject(id: string): Promise<void> {
   const db = await getConnection();
+  // Manually delete child rows so no orphaned records remain.
+  // The SQL schema declares ON DELETE CASCADE, but SQLite only enforces
+  // foreign keys when PRAGMA foreign_keys = ON is set on the connection.
+  // These manual deletes work regardless of pragma state.
+  await db.execute("DELETE FROM todos WHERE project_id = $1", [id]);
+  await db.execute("DELETE FROM errors WHERE project_id = $1", [id]);
+  await db.execute("DELETE FROM timeline_items WHERE project_id = $1", [id]);
+  await db.execute("DELETE FROM project_skills WHERE project_id = $1", [id]);
   await db.execute("DELETE FROM projects WHERE id = $1", [id]);
 }
 
