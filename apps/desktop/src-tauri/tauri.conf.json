@@ -14,10 +14,11 @@
       {
         "label": "main",
         "title": "Dev Project Organizer",
-        "width": 900,
-        "height": 650,
+        "width": 1280,
+        "height": 800,
         "center": true,
-        "visible": true
+        "visible": true,
+        "fullscreen": true
       }
     ],
     "security": {
