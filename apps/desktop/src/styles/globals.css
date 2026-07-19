@@ -247,6 +247,64 @@
   border-top: 1px solid var(--sidebar-border);
 }
 
+/* ── Window Controls ── */
+
+.window-controls {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0 2px;
+  flex-shrink: 0;
+}
+
+.win-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 28px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted-foreground);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  outline: none;
+  position: relative;
+  z-index: 20;
+}
+
+.win-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--foreground);
+}
+
+.win-btn:active {
+  background: rgba(255, 255, 255, 0.04);
+  transform: scale(0.92);
+}
+
+.win-btn-icon {
+  width: 14px;
+  height: 14px;
+  stroke-width: 1.75;
+}
+
+/* Close button — red hover like macOS / Windows 11 */
+.win-btn-close:hover {
+  background: rgba(239, 68, 68, 0.25);
+  color: rgb(239, 68, 68);
+}
+
+.win-btn-close:active {
+  background: rgba(239, 68, 68, 0.15);
+}
+
+.dark .win-btn-close:hover {
+  background: rgba(239, 68, 68, 0.2);
+  color: rgb(252, 129, 129);
+}
+
 /* ── Content Cards ── */
 
 .glass-card {
