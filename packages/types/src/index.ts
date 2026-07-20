@@ -160,8 +160,51 @@ export interface UpdateTimelineItemInput {
 }
 
 // ---------------------------------------------------------------------------
-// Shared Items (mobile share)
+// Tabs
 // ---------------------------------------------------------------------------
+
+/** A single open tab in the app — home page or project detail. */
+export interface Tab {
+  id: string;
+  /** "home" or "project" */
+  type: "home" | "project";
+  /** For project tabs: the project ID. */
+  projectId?: string;
+  /** Display label shown in the tab bar. */
+  label: string;
+  /** Optional subtitle shown in tooltip. */
+  subtitle?: string;
+}
+
+/** Maximum number of tabs to keep before evicting the oldest. */
+export const MAX_TABS = 20;
+
+// ---------------------------------------------------------------------------
+// Split View
+// ---------------------------------------------------------------------------
+
+export type SplitDirection = "horizontal" | "vertical";
+
+/** Per-tab split view configuration, persisted in localStorage. */
+export interface SplitConfig {
+  /** Whether split view is active for this tab. */
+  active: boolean;
+  /** The direction of the split. */
+  direction: SplitDirection;
+  /** Position of the divider as a percentage (0–100) of the primary panel. */
+  position: number;
+  /** The secondary panel's content type. Can be extended later. */
+  secondaryContent: "home" | "project";
+  /** The secondary panel's project ID (if secondaryContent is "project"). */
+  secondaryProjectId?: string;
+}
+
+export const DEFAULT_SPLIT_CONFIG: SplitConfig = {
+  active: false,
+  direction: "horizontal",
+  position: 50,
+  secondaryContent: "home",
+};
 
 // ---------------------------------------------------------------------------
 // Background (appearance)

@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Toaster, ThemeProvider } from "@workspace/ui";
 import { useProjects } from "@/hooks/useProjects";
 import { useBackground } from "@/hooks/useBackground";
+import { useTabs } from "@/hooks/useTabs";
+import { useSplitView } from "@/hooks/useSplitView";
 import type { Project } from "@workspace/types";
 import { AppLayout } from "@/components/AppLayout";
 import { ProjectCard } from "@/components/ProjectCard";
@@ -30,22 +32,73 @@ function AppContent() {
     reset: resetBackground,
     update: updateBackground,
   } = useBackground();
+  const {
+    tabs,
+    activeTab,
+    activeTabId,
+    openProject,
+    openHome,
+    setActive,
+    closeTab,
+    closeOtherTabs,
+    closeAllTabs,
+  } = useTabs();
   const [addOpen, setAddOpen] = useState(false);
   const [editing, setEditing] = useState<Project | null>(null);
   const [deleting, setDeleting] = useState<Project | null>(null);
-  const [selected, setSelected] = useState<Project | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
+
+  const selectedProject =
+    activeTab.type === "project"
+      ? projects.find((p) => p.id === activeTab.projectId) ?? null
+      : null;
+
+  const {
+    isSplit: splitActive,
+    direction: splitDirection,
+    position: splitPosition,
+    toggleSplit,
+    setSplitPosition,
+  } = useSplitView(activeTabId);
 
   return (
     <AppLayout
-      projects={projects}
-      loading={loading}
-      selectedProject={selected}
+      selectedProject={selectedProject}
       background={backgroundConfig}
-      onSelectProject={setSelected}
       onAddProject={() => setAddOpen(true)}
       onSettings={() => setSettingsOpen(true)}
-      onHome={() => setSelected(null)}
+      onHome={() => openHome()}
+      tabs={tabs}
+      activeTabId={activeTabId}
+      onSelectTab={setActive}
+      onCloseTab={closeTab}
+      onCloseOtherTabs={closeOtherTabs}
+      onCloseAllTabs={closeAllTabs}
+      splitActive={splitActive}
+      splitDirection={splitDirection}
+      splitPosition={splitPosition}
+      onSplitPositionChange={setSplitPosition}
+      onToggleSplit={toggleSplit}
+      splitSecondary={
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 p-4">
+          {projects.length === 0 ? (
+            <div className="col-span-full flex items-center justify-center h-48 text-sm text-muted-foreground">
+              No projects yet. Add one to get started.
+            </div>
+          ) : (
+            projects.map((project, index) => (
+              <ProjectCard
+                key={project.id}
+                project={project}
+                index={index}
+                onEdit={setEditing}
+                onDelete={setDeleting}
+                onOpen={openProject}
+              />
+            ))
+          )}
+        </div>
+      }
     >
       {loading ? (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -56,8 +109,8 @@ function AppContent() {
             />
           ))}
         </div>
-      ) : selected ? (
-        <ProjectDetail project={selected} onBack={() => setSelected(null)} />
+      ) : selectedProject ? (
+        <ProjectDetail project={selectedProject} onBack={() => openHome()} />
       ) : projects.length === 0 ? (
         <EmptyState onAdd={() => setAddOpen(true)} />
       ) : (
@@ -69,7 +122,7 @@ function AppContent() {
               index={index}
               onEdit={setEditing}
               onDelete={setDeleting}
-              onOpen={setSelected}
+              onOpen={openProject}
             />
           ))}
         </div>

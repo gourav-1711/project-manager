@@ -2,13 +2,29 @@ import { useState, useEffect } from "react";
 import { motion } from "motion/react";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { ShimmerButton } from "@workspace/ui";
-import { FolderOpen, Minus, Maximize, Minimize2, X } from "lucide-react";
-import type { Project } from "@workspace/types";
+import {
+  FolderOpen,
+  Minus,
+  Maximize,
+  Minimize2,
+  X,
+  Columns2,
+} from "lucide-react";
+import type { Tab } from "@workspace/types";
+import { TabBar } from "@/components/TabBar";
 
 interface WindowToolbarProps {
-  projectCount: number;
-  selectedProject: Project | null;
   onAddProject: () => void;
+  /** Tab system props */
+  tabs: Tab[];
+  activeTabId: string;
+  onSelectTab: (id: string) => void;
+  onCloseTab: (id: string) => void;
+  onCloseOtherTabs: (id: string) => void;
+  onCloseAllTabs: () => void;
+  /** Split view */
+  splitActive?: boolean;
+  onToggleSplit?: () => void;
 }
 
 /* ── Window controls (minimize / maximize / close) ── */
@@ -65,9 +81,15 @@ function WindowControls() {
 /* ── Main toolbar ── */
 
 export function WindowToolbar({
-  projectCount,
-  selectedProject,
   onAddProject,
+  tabs,
+  activeTabId,
+  onSelectTab,
+  onCloseTab,
+  onCloseOtherTabs,
+  onCloseAllTabs,
+  splitActive,
+  onToggleSplit,
 }: WindowToolbarProps) {
   return (
     <header className="window-toolbar">
@@ -76,48 +98,42 @@ export function WindowToolbar({
 
       {/* Action layer: sits above drag region, interactive elements here */}
       <div className="window-toolbar__action-layer">
-        {/* Left section — window controls + project info */}
-        <div className="flex items-center gap-0 min-w-0 flex-1">
+        {/* Left section — window controls + tab bar */}
+        <div className="flex items-center gap-0 min-w-0 flex-1 overflow-hidden">
           <WindowControls />
 
           <div className="w-px h-5 bg-border/40 mx-3 shrink-0" />
 
-          <motion.div
-            className="flex items-center gap-3 min-w-0"
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-          >
-            {selectedProject ? (
-              <div className="flex flex-col">
-                <h1 className="text-sm font-semibold tracking-tight">
-                  {selectedProject.name}
-                </h1>
-                <p className="text-[11px] text-muted-foreground/60 truncate max-w-[300px]">
-                  {selectedProject.path}
-                </p>
-              </div>
-            ) : (
-              <div className="flex flex-col">
-                <h1 className="text-sm font-semibold tracking-tight">
-                  Projects
-                </h1>
-                <p className="text-[11px] text-muted-foreground/60">
-                  {projectCount} project
-                  {projectCount !== 1 ? "s" : ""} registered
-                </p>
-              </div>
-            )}
-          </motion.div>
+          <TabBar
+            tabs={tabs}
+            activeTabId={activeTabId}
+            onSelectTab={onSelectTab}
+            onCloseTab={onCloseTab}
+            onCloseOtherTabs={onCloseOtherTabs}
+            onCloseAllTabs={onCloseAllTabs}
+            onAddTab={onAddProject}
+          />
         </div>
 
         {/* Right section — actions */}
         <motion.div
-          className="flex items-center gap-2 shrink-0"
+          className="flex items-center gap-1.5 shrink-0"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.4, delay: 0.1 }}
         >
+          {/* Split toggle */}
+          {onToggleSplit && (
+            <button
+              className={`split-toggle-btn ${splitActive ? "split-toggle-btn--active" : ""}`}
+              onClick={onToggleSplit}
+              title={splitActive ? "Close split view" : "Split view"}
+              aria-label={splitActive ? "Close split view" : "Split view"}
+            >
+              <Columns2 className="size-3.5" />
+            </button>
+          )}
+
           <ShimmerButton
             shimmerColor="rgba(255,255,255,0.25)"
             background="hsl(var(--primary))"

@@ -460,6 +460,209 @@
   border-top: 1px solid var(--sidebar-border);
 }
 
+/* ── Tab Bar (Sigma-style) ── */
+
+.tab-bar-container {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  gap: 4px;
+  min-width: 0;
+  flex: 0 1 auto;
+}
+
+.tab-bar-scroll {
+  display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    black var(--scroll-fade-left, 0),
+    black calc(100% - var(--scroll-fade-right, 0)),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    black var(--scroll-fade-left, 0),
+    black calc(100% - var(--scroll-fade-right, 0)),
+    transparent 100%
+  );
+}
+
+.tab-bar-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.tab-bar-track {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: calc(var(--header-height) - 8px);
+}
+
+.tab-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 10px;
+  padding-right: 4px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: hsl(var(--icon));
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+  -webkit-app-region: no-drag;
+  position: relative;
+}
+
+.tab-item:hover {
+  background-color: hsl(var(--foreground) / 5%);
+  color: hsl(var(--foreground) / 80%);
+}
+
+.tab-item[data-active="true"] {
+  background-color: hsl(var(--background-2));
+  color: hsl(var(--foreground));
+}
+
+.tab-item__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.tab-item__dot {
+  display: block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: hsl(var(--primary));
+  opacity: 0.6;
+}
+
+.tab-item__label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 120px;
+}
+
+.tab-item__close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: var(--radius-xs);
+  opacity: 0;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.tab-item:hover .tab-item__close,
+.tab-item[data-active="true"] .tab-item__close {
+  opacity: 0.6;
+}
+
+.tab-item__close:hover {
+  opacity: 1 !important;
+  background-color: hsl(var(--foreground) / 10%);
+}
+
+.tab-bar-add-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: hsl(var(--icon));
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+  -webkit-app-region: no-drag;
+}
+
+.tab-bar-add-btn:hover {
+  background-color: hsl(var(--foreground) / 5%);
+  color: hsl(var(--foreground) / 80%);
+}
+
+/* ── Split toggle button ── */
+
+.split-toggle-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: hsl(var(--icon));
+  cursor: pointer;
+  transition: all 0.15s ease;
+  -webkit-app-region: no-drag;
+}
+
+.split-toggle-btn:hover {
+  background-color: hsl(var(--foreground) / 5%);
+  color: hsl(var(--foreground) / 80%);
+}
+
+.split-toggle-btn--active {
+  background-color: hsl(var(--primary) / 12%);
+  color: hsl(var(--primary));
+}
+
+.split-toggle-btn--active:hover {
+  background-color: hsl(var(--primary) / 18%);
+  color: hsl(var(--primary));
+}
+
+/* ── Tab context menu ── */
+
+.tab-context-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 100;
+  min-width: 140px;
+  padding: 4px;
+  border: 1px solid hsl(var(--border) / 50%);
+  border-radius: var(--radius-md);
+  background: hsl(var(--background-2));
+  box-shadow: var(--shadow-lg);
+}
+
+.tab-context-menu__item {
+  display: block;
+  width: 100%;
+  padding: 6px 12px;
+  border: none;
+  border-radius: var(--radius-xs);
+  background: transparent;
+  color: hsl(var(--foreground) / 80%);
+  font-size: 12px;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.1s ease;
+}
+
+.tab-context-menu__item:hover {
+  background-color: hsl(var(--foreground) / 8%);
+  color: hsl(var(--foreground));
+}
+
 /* ── Window Controls ── */
 
 .window-controls {
@@ -689,6 +892,122 @@ input[type="range"].bg-slider::-moz-range-thumb {
 .bg-select option {
   background: #18181b;
   color: #e4e4e7;
+}
+
+/* ── Split View (Sigma-style resizable panels) ── */
+
+.split-view {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.split-view--horizontal {
+  flex-direction: row;
+}
+
+.split-view--vertical {
+  flex-direction: column;
+}
+
+.split-view__panel {
+  overflow: auto;
+  position: relative;
+}
+
+.split-view--horizontal .split-view__panel {
+  width: var(--split-pos, 50%);
+  height: 100%;
+}
+
+.split-view--horizontal .split-view__panel--secondary {
+  width: calc(100% - var(--split-pos, 50%));
+}
+
+.split-view--vertical .split-view__panel {
+  height: var(--split-pos, 50%);
+  width: 100%;
+}
+
+.split-view--vertical .split-view__panel--secondary {
+  height: calc(100% - var(--split-pos, 50%));
+}
+
+/* Divider / Gutter */
+.split-view__divider {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 10;
+  cursor: col-resize;
+  transition: background 0.15s ease;
+}
+
+.split-view--horizontal .split-view__divider {
+  width: 5px;
+  cursor: col-resize;
+}
+
+.split-view--vertical .split-view__divider {
+  height: 5px;
+  cursor: row-resize;
+}
+
+.split-view__divider:hover,
+.split-view__divider--active {
+  background: hsl(var(--primary) / 20%);
+}
+
+.split-view__divider-handle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 24px;
+  border-radius: var(--radius-xs);
+  background: hsl(var(--background-2));
+  border: 1px solid hsl(var(--border) / 30%);
+  color: hsl(var(--icon));
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  pointer-events: none;
+}
+
+.split-view--vertical .split-view__divider-handle {
+  transform: rotate(90deg);
+}
+
+.split-view__divider:hover .split-view__divider-handle,
+.split-view__divider--active .split-view__divider-handle {
+  opacity: 1;
+}
+
+.split-view__divider--active .split-view__divider-handle {
+  background: hsl(var(--primary) / 10%);
+  border-color: hsl(var(--primary) / 30%);
+  color: hsl(var(--primary));
+}
+
+/* Dragging overlay for cursor consistency */
+.split-view--dragging {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.split-view--dragging.split-view--horizontal {
+  cursor: col-resize;
+}
+
+.split-view--dragging.split-view--vertical {
+  cursor: row-resize;
+}
+
+.split-view--dragging .split-view__panel {
+  pointer-events: none;
 }
 
 /* ── Reduced motion ── */

@@ -2,23 +2,35 @@ import { type ReactNode, useMemo } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { NavSidebar } from "@/components/NavSidebar";
 import { WindowToolbar } from "@/components/WindowToolbar";
-import type { Project, BackgroundConfig } from "@workspace/types";
+import { SplitView } from "@/components/SplitView";
+import type { Project, BackgroundConfig, Tab, SplitDirection } from "@workspace/types";
 import {
   getPatternDataUrl,
   generateNoiseDataUrl,
 } from "@/lib/overlay-patterns";
 
 interface AppLayoutProps {
-  projects: Project[];
-  loading: boolean;
   selectedProject: Project | null;
-  onSelectProject: (project: Project) => void;
   onAddProject: () => void;
   onSettings: () => void;
   onHome: () => void;
   children: ReactNode;
   /** Optional background config — renders a full-viewport backdrop when enabled. */
   background?: BackgroundConfig | null;
+  /** Tab system props — passed through to WindowToolbar */
+  tabs: Tab[];
+  activeTabId: string;
+  onSelectTab: (id: string) => void;
+  onCloseTab: (id: string) => void;
+  onCloseOtherTabs: (id: string) => void;
+  onCloseAllTabs: () => void;
+  /** Split view props */
+  splitActive: boolean;
+  splitDirection: SplitDirection;
+  splitPosition: number;
+  onSplitPositionChange: (pct: number) => void;
+  splitSecondary: ReactNode;
+  onToggleSplit: () => void;
 }
 
 /* ── Background layer component ── */
@@ -81,13 +93,24 @@ function BackgroundLayer({ config }: { config: BackgroundConfig }) {
 /* ── Main layout ── */
 
 export function AppLayout({
-  projects,
   selectedProject,
   onAddProject,
   onSettings,
   onHome,
   children,
   background,
+  tabs,
+  activeTabId,
+  onSelectTab,
+  onCloseTab,
+  onCloseOtherTabs,
+  onCloseAllTabs,
+  splitActive,
+  splitDirection,
+  splitPosition,
+  onSplitPositionChange,
+  splitSecondary,
+  onToggleSplit,
 }: AppLayoutProps) {
   const showBg =
     background?.enabled &&
@@ -105,12 +128,39 @@ export function AppLayout({
         onSettings={onSettings}
       />
       <WindowToolbar
-        projectCount={projects.length}
-        selectedProject={selectedProject}
         onAddProject={onAddProject}
+        tabs={tabs}
+        activeTabId={activeTabId}
+        onSelectTab={onSelectTab}
+        onCloseTab={onCloseTab}
+        onCloseOtherTabs={onCloseOtherTabs}
+        onCloseAllTabs={onCloseAllTabs}
+        splitActive={splitActive}
+        onToggleSplit={onToggleSplit}
       />
       <main className="content-area">
-        <AnimatePresence mode="wait">
+        {splitActive ? (
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={selectedProject?.id ?? "home"}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+              className="h-full"
+            >
+              <SplitView
+                direction={splitDirection}
+                position={splitPosition}
+                onPositionChange={onSplitPositionChange}
+                secondary={splitSecondary}
+              >
+                {children}
+              </SplitView>
+            </motion.div>
+          </AnimatePresence>
+        ) : (
+          <AnimatePresence mode="wait">
           <motion.div
             key={selectedProject?.id ?? "home"}
             initial={{ opacity: 0, y: 12 }}
@@ -121,6 +171,7 @@ export function AppLayout({
             {children}
           </motion.div>
         </AnimatePresence>
+        )}
       </main>
     </div>
   );
