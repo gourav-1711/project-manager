@@ -92,9 +92,9 @@ export function WindowToolbar({
   onToggleSplit,
 }: WindowToolbarProps) {
   return (
-    <header className="window-toolbar">
-      {/* Drag region: covers the full toolbar; interactive children opt out */}
-      <div className="window-toolbar__drag-layer" data-tauri-drag-region />
+    <header className="window-toolbar" data-tauri-drag-region>
+      {/* Drag region is on the <header> itself; interactive children use -webkit-app-region: no-drag */}
+      <div className="window-toolbar__drag-layer" />
 
       {/* Action layer: sits above drag region, interactive elements here */}
       <div className="window-toolbar__action-layer">

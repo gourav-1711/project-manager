@@ -62,31 +62,61 @@ function AppContent() {
   } = useSplitView(activeTabId);
 
   return (
-    <AppLayout
-      selectedProject={selectedProject}
-      background={backgroundConfig}
-      onAddProject={() => setAddOpen(true)}
-      onSettings={() => setSettingsOpen(true)}
-      onHome={() => openHome()}
-      tabs={tabs}
-      activeTabId={activeTabId}
-      onSelectTab={setActive}
-      onCloseTab={closeTab}
-      onCloseOtherTabs={closeOtherTabs}
-      onCloseAllTabs={closeAllTabs}
-      splitActive={splitActive}
-      splitDirection={splitDirection}
-      splitPosition={splitPosition}
-      onSplitPositionChange={setSplitPosition}
-      onToggleSplit={toggleSplit}
-      splitSecondary={
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 p-4">
-          {projects.length === 0 ? (
-            <div className="col-span-full flex items-center justify-center h-48 text-sm text-muted-foreground">
-              No projects yet. Add one to get started.
-            </div>
-          ) : (
-            projects.map((project, index) => (
+    <>
+      <AppLayout
+        selectedProject={selectedProject}
+        background={backgroundConfig}
+        onAddProject={() => setAddOpen(true)}
+        onSettings={() => setSettingsOpen(true)}
+        onHome={() => openHome()}
+        tabs={tabs}
+        activeTabId={activeTabId}
+        onSelectTab={setActive}
+        onCloseTab={closeTab}
+        onCloseOtherTabs={closeOtherTabs}
+        onCloseAllTabs={closeAllTabs}
+        splitActive={splitActive}
+        splitDirection={splitDirection}
+        splitPosition={splitPosition}
+        onSplitPositionChange={setSplitPosition}
+        onToggleSplit={toggleSplit}
+        splitSecondary={
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 p-4">
+            {projects.length === 0 ? (
+              <div className="col-span-full flex items-center justify-center h-48 text-sm text-muted-foreground">
+                No projects yet. Add one to get started.
+              </div>
+            ) : (
+              projects.map((project, index) => (
+                <ProjectCard
+                  key={project.id}
+                  project={project}
+                  index={index}
+                  onEdit={setEditing}
+                  onDelete={setDeleting}
+                  onOpen={openProject}
+                />
+              ))
+            )}
+          </div>
+        }
+      >
+        {loading ? (
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div
+                key={i}
+                className="h-36 animate-pulse rounded-xl bg-muted/20"
+              />
+            ))}
+          </div>
+        ) : selectedProject ? (
+          <ProjectDetail project={selectedProject} onBack={() => openHome()} />
+        ) : projects.length === 0 ? (
+          <EmptyState onAdd={() => setAddOpen(true)} />
+        ) : (
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            {projects.map((project, index) => (
               <ProjectCard
                 key={project.id}
                 project={project}
@@ -95,39 +125,12 @@ function AppContent() {
                 onDelete={setDeleting}
                 onOpen={openProject}
               />
-            ))
-          )}
-        </div>
-      }
-    >
-      {loading ? (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div
-              key={i}
-              className="h-36 animate-pulse rounded-xl bg-muted/20"
-            />
-          ))}
-        </div>
-      ) : selectedProject ? (
-        <ProjectDetail project={selectedProject} onBack={() => openHome()} />
-      ) : projects.length === 0 ? (
-        <EmptyState onAdd={() => setAddOpen(true)} />
-      ) : (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          {projects.map((project, index) => (
-            <ProjectCard
-              key={project.id}
-              project={project}
-              index={index}
-              onEdit={setEditing}
-              onDelete={setDeleting}
-              onOpen={openProject}
-            />
-          ))}
-        </div>
-      )}
+            ))}
+          </div>
+        )}
+      </AppLayout>
 
+      {/* ── Dialogs moved OUTSIDE AppLayout to avoid AnimatePresence ── */}
       <AddProjectDialog
         open={addOpen}
         onOpenChange={setAddOpen}
@@ -160,7 +163,7 @@ function AppContent() {
       />
 
       <Toaster />
-    </AppLayout>
+    </>
   );
 }
 

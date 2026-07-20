@@ -286,6 +286,7 @@
 
 .window-toolbar__action-layer > * {
   pointer-events: auto;
+  -webkit-app-region: no-drag;
 }
 
 /* Content area — scrollable */

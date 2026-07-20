@@ -12,7 +12,6 @@ import {
   Input,
   Label,
   Textarea,
-  SmoothInput,
 } from "@workspace/ui";
 import type { Project, CreateProjectInput } from "@workspace/types";
 
@@ -102,12 +101,11 @@ export function AddProjectDialog({
 
           <div className="flex flex-col gap-2">
             <Label htmlFor="project-name">Name</Label>
-            <SmoothInput
+            <Input
               id="project-name"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Project name"
-              wrapperClassName="max-w-full p-3"
             />
           </div>
 
@@ -199,12 +197,11 @@ export function EditProjectDialog({
         <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-2">
             <Label htmlFor="edit-name">Name</Label>
-            <SmoothInput
+            <Input
               id="edit-name"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Project name"
-              wrapperClassName="max-w-full p-3"
             />
           </div>
           <div className="flex flex-col gap-2">
