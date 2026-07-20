@@ -1,8 +1,12 @@
-import { type ReactNode } from "react";
+import { type ReactNode, useMemo } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Sidebar } from "@/components/Sidebar";
-import { AppHeader } from "@/components/AppHeader";
-import type { Project } from "@workspace/types";
+import { NavSidebar } from "@/components/NavSidebar";
+import { WindowToolbar } from "@/components/WindowToolbar";
+import type { Project, BackgroundConfig } from "@workspace/types";
+import {
+  getPatternDataUrl,
+  generateNoiseDataUrl,
+} from "@/lib/overlay-patterns";
 
 interface AppLayoutProps {
   projects: Project[];
@@ -13,30 +17,94 @@ interface AppLayoutProps {
   onSettings: () => void;
   onHome: () => void;
   children: ReactNode;
+  /** Optional background config — renders a full-viewport backdrop when enabled. */
+  background?: BackgroundConfig | null;
 }
+
+/* ── Background layer component ── */
+
+function BackgroundLayer({ config }: { config: BackgroundConfig }) {
+  const cssVars = useMemo(
+    () =>
+      ({
+        "--bg-blur": `${config.blur}px`,
+        "--bg-saturate": config.saturation,
+        "--bg-contrast": config.contrast,
+        "--bg-opacity": config.opacity,
+        "--bg-blend-mode": config.blendMode,
+        "--bg-tint":
+          config.blendMode !== "normal"
+            ? "rgba(0, 0, 0, 0.15)"
+            : "transparent",
+      }) as React.CSSProperties,
+    [config],
+  );
+
+  const patternUrl = config.overlayPattern === "noise"
+    ? generateNoiseDataUrl(config.overlayOpacity)
+    : getPatternDataUrl(config.overlayPattern, config.overlayScale);
+
+  const showPattern = config.overlayPattern !== "none";
+  const isNoise = config.overlayPattern === "noise";
+
+  return (
+    <div className="app-background" style={cssVars}>
+      {config.type === "video" ? (
+        <video
+          src={config.src}
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="auto"
+        />
+      ) : (
+        <img src={config.src} alt="Background" draggable={false} />
+      )}
+      <div className="app-background-overlay" />
+      {showPattern && (
+        <div
+          className={`app-bg-pattern ${isNoise ? "app-bg-pattern--noise" : ""}`}
+          style={{
+            backgroundImage: patternUrl || undefined,
+            backgroundSize: isNoise
+              ? `${Math.max(50, Math.round(256 * config.overlayScale))}px`
+              : undefined,
+            opacity: isNoise ? 1 : config.overlayOpacity,
+          }}
+        />
+      )}
+    </div>
+  );
+}
+
+/* ── Main layout ── */
 
 export function AppLayout({
   projects,
-  loading,
   selectedProject,
-  onSelectProject,
   onAddProject,
   onSettings,
   onHome,
   children,
+  background,
 }: AppLayoutProps) {
+  const showBg =
+    background?.enabled &&
+    background.type !== "none" &&
+    background.src.length > 0;
+
   return (
     <div className="app-shell">
-      <Sidebar
-        projects={projects}
-        selectedId={selectedProject?.id ?? null}
-        onSelectProject={onSelectProject}
-        onAddProject={onAddProject}
-        onSettings={onSettings}
+      {/* ── Background layer ── */}
+      {showBg && <BackgroundLayer config={background!} />}
+
+      <NavSidebar
+        isHomeActive={!selectedProject}
         onHome={onHome}
-        loading={loading}
+        onSettings={onSettings}
       />
-      <AppHeader
+      <WindowToolbar
         projectCount={projects.length}
         selectedProject={selectedProject}
         onAddProject={onAddProject}

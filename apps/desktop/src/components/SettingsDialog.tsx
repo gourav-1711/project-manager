@@ -9,14 +9,29 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@workspace/ui";
-import { SunMoon, MonitorSmartphone } from "lucide-react";
+import { SunMoon, MonitorSmartphone, Image } from "lucide-react";
+import { BackgroundSettings } from "@/components/BackgroundSettings";
+import type { BackgroundConfig } from "@workspace/types";
+import type { FileTypeFilter } from "@/hooks/useBackground";
 
 interface SettingsDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  /** Background config & handlers — passed from App so state lives at top level. */
+  backgroundConfig: BackgroundConfig;
+  onPickBackgroundFile: (filter: FileTypeFilter) => void;
+  onUpdateBackground: (patch: Partial<BackgroundConfig>) => void;
+  onResetBackground: () => void;
 }
 
-export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
+export function SettingsDialog({
+  open,
+  onOpenChange,
+  backgroundConfig,
+  onPickBackgroundFile,
+  onUpdateBackground,
+  onResetBackground,
+}: SettingsDialogProps) {
   const [autostartOn, setAutostartOn] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -68,6 +83,25 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
         </DialogHeader>
 
         <div className="flex flex-col gap-4 py-2">
+          {/* ── Appearance / Background ── */}
+          <div className="flex flex-col gap-3 rounded-lg border glass-subtle p-4">
+            <div className="flex items-start gap-3">
+              <Image className="mt-0.5 size-5 text-muted-foreground" />
+              <div className="flex-1">
+                <p className="text-sm font-medium">Appearance</p>
+                <p className="text-xs text-muted-foreground">
+                  Set a background image or video with glassmorphism controls.
+                </p>
+              </div>
+            </div>
+            <BackgroundSettings
+              config={backgroundConfig}
+              onPickFile={onPickBackgroundFile}
+              onUpdate={onUpdateBackground}
+              onReset={onResetBackground}
+            />
+          </div>
+
           {/* ── Launch on startup ── */}
           <div className="flex items-center justify-between gap-4 rounded-lg border glass-subtle p-4">
             <div className="flex items-start gap-3">

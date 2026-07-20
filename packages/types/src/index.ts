@@ -163,6 +163,80 @@ export interface UpdateTimelineItemInput {
 // Shared Items (mobile share)
 // ---------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------
+// Background (appearance)
+// ---------------------------------------------------------------------------
+
+/** Background type selector. */
+export type BackgroundType = "none" | "image" | "video";
+
+/** Subtle overlay pattern drawn on top of the background image/video. */
+export type OverlayPattern = "none" | "noise" | "grid" | "dots";
+
+/** CSS mix-blend-mode values supported for background overlay. */
+export type BlendMode =
+  | "normal"
+  | "multiply"
+  | "screen"
+  | "overlay"
+  | "darken"
+  | "lighten"
+  | "color-dodge"
+  | "color-burn"
+  | "hard-light"
+  | "soft-light"
+  | "difference"
+  | "exclusion"
+  | "hue"
+  | "saturation"
+  | "color"
+  | "luminosity";
+
+/** Full background configuration — persisted in localStorage. */
+export interface BackgroundConfig {
+  /** "none" (default), "image", or "video" */
+  type: BackgroundType;
+  /** Absolute path or URL to the image/video file. */
+  src: string;
+  /** CSS blur in pixels (0–100). */
+  blur: number;
+  /** Opacity 0–1. */
+  opacity: number;
+  /** Saturation multiplier 0–3. */
+  saturation: number;
+  /** Contrast multiplier 0–3. */
+  contrast: number;
+  /** CSS mix-blend-mode for the overlay. */
+  blendMode: BlendMode;
+  /** Subtle pattern overlay on top of the background ("none", "noise", "grid", "dots"). */
+  overlayPattern: OverlayPattern;
+  /** Pattern opacity 0–1. */
+  overlayOpacity: number;
+  /** Pattern scale/size multiplier 0.5–3. */
+  overlayScale: number;
+  /** Whether the background fills the entire screen behind the glass shell. */
+  enabled: boolean;
+}
+
+/** Sensible defaults for a first-run background config. */
+export const DEFAULT_BACKGROUND_CONFIG: BackgroundConfig = {
+  type: "none",
+  src: "",
+  blur: 0,
+  opacity: 0.85,
+  saturation: 1.4,
+  contrast: 1,
+  blendMode: "normal",
+  overlayPattern: "none",
+  overlayOpacity: 0.3,
+  overlayScale: 1,
+  enabled: false,
+};
+
+// ---------------------------------------------------------------------------
+// Shared Items (mobile share)
+// ---------------------------------------------------------------------------
+
 /** An item received from a phone via the local share server. */
 export interface SharedItem {
   id: string;

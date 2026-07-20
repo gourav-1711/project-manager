@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Toaster, ThemeProvider } from "@workspace/ui";
 import { useProjects } from "@/hooks/useProjects";
+import { useBackground } from "@/hooks/useBackground";
 import type { Project } from "@workspace/types";
 import { AppLayout } from "@/components/AppLayout";
 import { ProjectCard } from "@/components/ProjectCard";
@@ -23,6 +24,12 @@ function App() {
 
 function AppContent() {
   const { projects, loading, add, update, remove } = useProjects();
+  const {
+    config: backgroundConfig,
+    pickFile: pickBackgroundFile,
+    reset: resetBackground,
+    update: updateBackground,
+  } = useBackground();
   const [addOpen, setAddOpen] = useState(false);
   const [editing, setEditing] = useState<Project | null>(null);
   const [deleting, setDeleting] = useState<Project | null>(null);
@@ -34,6 +41,7 @@ function AppContent() {
       projects={projects}
       loading={loading}
       selectedProject={selected}
+      background={backgroundConfig}
       onSelectProject={setSelected}
       onAddProject={() => setAddOpen(true)}
       onSettings={() => setSettingsOpen(true)}
@@ -92,6 +100,10 @@ function AppContent() {
       <SettingsDialog
         open={settingsOpen}
         onOpenChange={setSettingsOpen}
+        backgroundConfig={backgroundConfig}
+        onPickBackgroundFile={pickBackgroundFile}
+        onUpdateBackground={updateBackground}
+        onResetBackground={resetBackground}
       />
 
       <Toaster />

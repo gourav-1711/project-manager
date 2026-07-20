@@ -1,32 +1,76 @@
 /* ─────────────────────────────────────────────
-   Glassmorphism Design System — Dev Project Organizer
+   Sigma-Inspired Glassmorphism Design System — Dev Project Organizer
    ───────────────────────────────────────────── */
 
-/* ── Layout Tokens ── */
+/* ── Design Tokens ── */
 :root {
+  color-scheme: light;
+
+  /* Layout */
   --sidebar-width: 260px;
-  --header-height: 56px;
+  --nav-sidebar-width: 42px;
+  --header-height: 48px;
+  --content-padding: 24px;
+
+  /* Sigma-style depth layers */
+  --background-2: 220 13% 93%;
+  --background-3: 220 14% 98%;
+  --window-toolbar: 220 14% 96%;
+  --icon: 220 9% 38%;
+
+  /* Glassmorphism base */
   --glass-bg: rgba(255, 255, 255, 0.06);
   --glass-border: rgba(255, 255, 255, 0.08);
   --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
-  --glass-blur: 24px;
+  --glass-blur: 32px;
   --glass-saturate: 1.4;
 
+  /* Sidebar-specific */
   --sidebar-bg: rgba(255, 255, 255, 0.04);
   --sidebar-border: rgba(255, 255, 255, 0.06);
   --sidebar-hover: rgba(255, 255, 255, 0.06);
   --sidebar-active: rgba(99, 102, 241, 0.15);
   --sidebar-active-border: rgba(99, 102, 241, 0.4);
 
-  --content-padding: 24px;
+  /* Cards */
   --card-radius: 14px;
   --glass-radius: 16px;
+
+  /* Sigma-style radius scale (relative to base --radius) */
+  --radius: 0.5rem;
+  --radius-full: 9999px;
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-xs: min(calc(var(--radius) / 2.5), 6px);
+
+  /* Sigma-style shadows */
+  --shadow-md:
+    0 4px 6px -1px rgb(0 0 0 / 2%), 0 2px 4px -1px rgb(0 0 0 / 2%), 0 12px 24px rgb(0 0 0 / 5%);
+  --shadow-lg:
+    0 10px 15px -3px rgb(0 0 0 / 10%), 0 4px 6px -4px rgb(0 0 0 / 7%), 0 20px 40px rgb(0 0 0 / 30%);
+
+  /* Fonts */
+  --font-mono:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
 .dark {
+  color-scheme: dark;
+
+  /* Dark depth layers */
+  --background-2: 225 10% 16%;
+  --background-3: 225 12% 13%;
+  --window-toolbar: 220 11% 19%;
+  --icon: 0 0% 62%;
+
+  /* Dark glass */
   --glass-bg: rgba(255, 255, 255, 0.04);
   --glass-border: rgba(255, 255, 255, 0.06);
   --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+
+  /* Dark sidebar */
   --sidebar-bg: rgba(255, 255, 255, 0.03);
   --sidebar-border: rgba(255, 255, 255, 0.05);
   --sidebar-hover: rgba(255, 255, 255, 0.05);
@@ -83,7 +127,7 @@
 /* Main app shell — full viewport grid */
 .app-shell {
   display: grid;
-  grid-template-columns: var(--sidebar-width) 1fr;
+  grid-template-columns: var(--nav-sidebar-width) 1fr;
   grid-template-rows: var(--header-height) 1fr;
   grid-template-areas:
     "sidebar header"
@@ -93,7 +137,7 @@
   overflow: hidden;
 }
 
-/* Sidebar panel */
+/* Sidebar panel (legacy — wide project list) */
 .sidebar {
   grid-area: sidebar;
   display: flex;
@@ -106,7 +150,95 @@
   z-index: 10;
 }
 
-/* Header bar */
+/* Nav Sidebar (Sigma-style — compact 42px icon panel) */
+.nav-sidebar {
+  grid-area: sidebar;
+  display: flex;
+  width: var(--nav-sidebar-width);
+  height: calc(100vh - 12px);
+  flex-direction: column;
+  align-items: center;
+  border-radius: var(--radius-sm);
+  margin: 6px;
+  background-color: hsl(var(--background-2));
+  z-index: 10;
+  overflow: hidden;
+}
+
+.nav-sidebar-header {
+  display: flex;
+  height: 40px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.nav-sidebar-header-logo {
+  width: 22px;
+  height: 22px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #6366f1, #a855f7);
+  color: white;
+  flex-shrink: 0;
+}
+
+.nav-sidebar-items {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 4px;
+}
+
+.nav-sidebar-spacer {
+  flex: 1;
+}
+
+.nav-sidebar-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 4px;
+  padding-bottom: 12px;
+}
+
+.nav-sidebar-btn {
+  display: flex;
+  width: 28px;
+  height: 28px;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: hsl(var(--icon));
+  cursor: pointer;
+  transition: all 0.15s ease;
+  outline: none;
+}
+
+.nav-sidebar-btn:hover {
+  background-color: hsl(var(--foreground) / 3%);
+  color: hsl(var(--foreground));
+}
+
+.nav-sidebar-btn[data-active="true"] {
+  background-color: hsl(var(--sidebar-active));
+  color: hsl(var(--primary));
+}
+
+.nav-sidebar-btn-icon {
+  width: 18px;
+  height: 18px;
+  stroke-width: 1.5;
+}
+
+/* Header bar (legacy) */
 .app-header {
   grid-area: header;
   display: flex;
@@ -121,6 +253,41 @@
   z-index: 5;
 }
 
+/* Window Toolbar (Sigma-style) */
+.window-toolbar {
+  grid-area: header;
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: var(--header-height);
+  background-color: hsl(var(--background-3));
+  border-bottom: 1px solid hsl(var(--border) / 50%);
+  z-index: 5;
+  overflow: hidden;
+}
+
+.window-toolbar__drag-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.window-toolbar__action-layer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
+  padding: 0 16px;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.window-toolbar__action-layer > * {
+  pointer-events: auto;
+}
+
 /* Content area — scrollable */
 .content-area {
   grid-area: content;
@@ -128,6 +295,52 @@
   overflow-x: hidden;
   padding: var(--content-padding);
   position: relative;
+}
+
+/* ── Progressive Blur Utility (Sigma-style) ── */
+
+.progressive-blur {
+  position: absolute;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.progressive-blur__layer {
+  position: absolute;
+  -webkit-backdrop-filter: blur(var(--pb-amount, 0));
+  backdrop-filter: blur(var(--pb-amount, 0));
+  inset: 0;
+  -webkit-mask-image: linear-gradient(
+    var(--pb-direction, to bottom),
+    black var(--pb-start, 0%),
+    transparent var(--pb-end, 100%)
+  );
+  mask-image: linear-gradient(
+    var(--pb-direction, to bottom),
+    black var(--pb-start, 0%),
+    transparent var(--pb-end, 100%)
+  );
+}
+
+/* ── Horizontal Scroll Fade (Sigma-style) ── */
+
+.scroll-fade {
+  --scroll-fade-left: 0;
+  --scroll-fade-right: 0;
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    black var(--scroll-fade-left),
+    black calc(100% - var(--scroll-fade-right)),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    black var(--scroll-fade-left),
+    black calc(100% - var(--scroll-fade-right)),
+    transparent 100%
+  );
 }
 
 /* ── Sidebar Inner Elements ── */
@@ -361,6 +574,121 @@
   background: rgba(0, 0, 0, 0.6) !important;
   backdrop-filter: blur(8px) !important;
   -webkit-backdrop-filter: blur(8px) !important;
+}
+
+/* ── Background Layer ── */
+
+/* Full-viewport background behind the glass shell */
+.app-background {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.app-background img,
+.app-background video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: blur(var(--bg-blur, 0px)) saturate(var(--bg-saturate, 1)) contrast(var(--bg-contrast, 1));
+}
+
+/* Semi-transparent overlay for blend-mode & opacity control */
+.app-background-overlay {
+  position: absolute;
+  inset: 0;
+  background: var(--bg-tint, transparent);
+  opacity: var(--bg-opacity, 0.85);
+  mix-blend-mode: var(--bg-blend-mode, normal);
+}
+
+/* Subtle pattern overlay (noise, grid, dots) on top of background */
+.app-bg-pattern {
+  position: absolute;
+  inset: 0;
+  background-repeat: repeat;
+  pointer-events: none;
+  mix-blend-mode: overlay;
+}
+
+.app-bg-pattern--noise {
+  background-repeat: repeat;
+  background-size: 256px;
+  mix-blend-mode: overlay;
+  opacity: 1;
+}
+
+/* ── Range Input Styling ── */
+
+input[type="range"].bg-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.1);
+  outline: none;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+input[type="range"].bg-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6366f1, #a855f7);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.4);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+input[type="range"].bg-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+  box-shadow: 0 2px 12px rgba(99, 102, 241, 0.6);
+}
+
+input[type="range"].bg-slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6366f1, #a855f7);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+}
+
+/* ── Background select ── */
+.bg-select {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 100%;
+  padding: 8px 36px 8px 12px;
+  font-size: 13px;
+  border-radius: 8px;
+  border: 1px solid var(--glass-border, rgba(255,255,255,0.08));
+  background: rgba(0, 0, 0, 0.2);
+  color: var(--foreground, #e4e4e7);
+  cursor: pointer;
+  transition: border-color 0.2s;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23a1a1aa' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 14px;
+}
+
+.bg-select:focus {
+  outline: none;
+  border-color: #6366f1;
+}
+
+.bg-select option {
+  background: #18181b;
+  color: #e4e4e7;
 }
 
 /* ── Reduced motion ── */

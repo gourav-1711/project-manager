@@ -17,7 +17,10 @@ Built with **Tauri 2** (Rust + React + TypeScript) as a **Turborepo** monorepo.
 | **Timeline Planning** | Plan project milestones and phases with a dated timeline view, month grouping, and inline status tracking |
 | **System Tray** | Minimizes to tray on close, background idle at low RAM, autostart on login |
 | **Custom Title Bar** | Chromeless window with custom minimize/maximize/close controls and glass header |
+| **Background Image/Video** | Custom background with blur, opacity, saturation, contrast, blend modes, and overlay patterns (noise, grid, dots) |
 | **Dark/Light Theme** | Landing page and desktop app support both themes with system preference detection |
+
+> Design and features partially inspired by [Sigma File Manager](https://github.com/aleksey-hoffman/sigma-file-manager) — specifically the glassmorphism design system, background (infusion) system with overlay patterns, and planned tab/split-view layout. |
 
 ## Architecture
 
@@ -36,7 +39,8 @@ project-manager/
 ├── .github/workflows/   # CI build & release pipelines
 ├── turbo.json            # Turborepo build orchestration
 ├── pnpm-workspace.yaml   # pnpm workspace config
-└── all-phases-plan.md    # Development roadmap
+├── all-phases-plan.md    # Development roadmap
+└── sigma-redesign-plan.md # Sigma-inspired redesign plan
 ```
 
 ## Tech Stack
@@ -49,7 +53,7 @@ project-manager/
 | CSS framework | Tailwind CSS 4 |
 | UI library | shadcn/ui (Radix primitives) + Aceternity UI + Magic UI |
 | Animations | motion (Framer Motion v12) |
-| Database | SQLite via `tauri-plugin-sql` with 7 migrations (v0–v6) |
+| Database | SQLite via `tauri-plugin-sql` with 7 migrations (v0–v6) — projects, todos, errors, project_skills, shared_items, timeline_items |
 | Mobile share server | axum (async Rust HTTP) with QR code |
 | Monorepo | Turborepo + pnpm 11.5 |
 | Landing page | Next.js 16 |
@@ -59,11 +63,11 @@ project-manager/
 
 ## UI Design
 
-The desktop app features a **glassmorphism design system** with:
+The desktop app features a **glassmorphism design system** inspired by [Sigma File Manager](https://github.com/aleksey-hoffman/sigma-file-manager) with:
 
 - **Custom chromeless window** — native title bar replaced with a glass header containing minimize, maximize/restore, and close buttons
 - **Sidebar layout** — collapsible sidebar with project list, brand logo, and quick actions
-- **Glass effects** — `backdrop-filter: blur(24px)` with saturate, subtle borders, and layered transparency
+- **Glass effects** — `backdrop-filter: blur(32px)` with saturate, subtle borders, and layered transparency
 - **Animated transitions** — staggered list animations, hover scales, tab transitions via `motion/react`
 - **Responsive grid** — adaptive project card grid (1–3 columns depending on viewport)
 - **Smooth inputs** — `SmoothInput` component with animated carets and spring physics
@@ -149,19 +153,23 @@ src/
 │   ├── ErrorBoundary.tsx      # Class component error boundary
 │   ├── TodosTab.tsx           # Per-project todo list
 │   ├── ErrorsTab.tsx          # Per-project error log
+│   ├── BackgroundSettings.tsx  # Background image/video + overlay pattern controls
 │   ├── SkillsTab.tsx          # Skill catalog & installer
 │   ├── TimelineTab.tsx        # Milestone timeline
 │   ├── ShareDialog.tsx        # Mobile share + QR code
-│   └── SettingsDialog.tsx     # Autostart & tray info
+│   └── SettingsDialog.tsx     # Autostart, tray & background settings
 ├── hooks/
 │   ├── useProjects.ts         # Project CRUD
 │   ├── useTodos.ts            # Todo CRUD
 │   ├── useErrors.ts           # Error log CRUD
+│   ├── useBackground.ts       # Background config with localStorage persistence
 │   ├── useSkills.ts           # Skill install lifecycle
 │   ├── useTimeline.ts         # Timeline CRUD
 │   └── useSharedItems.ts      # Mobile share server state
 └── lib/
-    └── launch.ts              # Tool launcher (VS Code, terminal, etc.)
+    ├── launch.ts              # Tool launcher (VS Code, terminal, etc.)
+    ├── background.ts          # Blend mode constants & labels
+    └── overlay-patterns.ts    # Canvas noise + SVG grid/dot pattern generators
 ```
 
 ### Rust Backend (`apps/desktop/src-tauri`)
@@ -181,7 +189,7 @@ The Rust backend exposes 5 Tauri commands:
 
 ## Database
 
-SQLite via `tauri-plugin-sql` with 6 migrations:
+SQLite via `tauri-plugin-sql` with 7 migrations (v0–v6):
 
 | Version | Table | Description |
 |---------|-------|-------------|
