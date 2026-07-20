@@ -47,33 +47,16 @@ pub struct ShareServerState {
 pub struct ServerController {
     pub shutdown_tx: oneshot::Sender<()>,
     pub url: String,
-    pub items: Arc<Mutex<Vec<SharedItem>>>,
 }
 
 // ---------------------------------------------------------------------------
 // Temp directory cleanup
 // ---------------------------------------------------------------------------
 
-/// Delete temp files older than 24 hours to prevent accumulation.
-fn clean_old_temp_files() {
+/// Remove any leftover temp files from previous sessions.
+fn clean_temp_dir() {
     let temp_dir = std::env::temp_dir().join("dev-project-organizer-share");
-    if !temp_dir.exists() {
-        return;
-    }
-    let now = std::time::SystemTime::now();
-    let max_age = std::time::Duration::from_secs(86400); // 24 hours
-
-    if let Ok(entries) = std::fs::read_dir(&temp_dir) {
-        for entry in entries.flatten() {
-            if let Ok(metadata) = entry.metadata() {
-                if let Ok(modified) = metadata.modified() {
-                    if now.duration_since(modified).ok().map_or(false, |age| age > max_age) {
-                        let _ = std::fs::remove_file(entry.path());
-                    }
-                }
-            }
-        }
-    }
+    let _ = std::fs::remove_dir_all(&temp_dir);
 }
 
 // ---------------------------------------------------------------------------
@@ -85,7 +68,7 @@ fn clean_old_temp_files() {
 /// Returns the full URL (e.g. `http://192.168.1.42:54321`) on success.
 pub async fn start(app_handle: AppHandle) -> Result<ServerController, String> {
     // Clean up stale temp files from previous sessions
-    clean_old_temp_files();
+    clean_temp_dir();
 
     // Detect LAN IP
     let ip =
@@ -130,7 +113,6 @@ pub async fn start(app_handle: AppHandle) -> Result<ServerController, String> {
     Ok(ServerController {
         shutdown_tx,
         url,
-        items,
     })
 }
 
@@ -181,7 +163,7 @@ async fn send_file_handler(
     State(state): State<ShareServerState>,
     mut multipart: Multipart,
 ) -> impl IntoResponse {
-    let mut saved = Vec::new();
+    let mut saved = 0u32;
     let temp_dir = std::env::temp_dir().join("dev-project-organizer-share");
     let _ = std::fs::create_dir_all(&temp_dir);
 
@@ -193,13 +175,15 @@ async fn send_file_handler(
             Err(_) => continue,
         };
 
+        let file_id = generate_id();
+
         // Save to temp dir with a unique name
         let ext = file_name
             .rsplit('.')
             .next()
             .map(|e| format!(".{}", e))
             .unwrap_or_default();
-        let save_name = format!("{}{}", generate_id(), ext);
+        let save_name = format!("{}{}", file_id, ext);
         let save_path = temp_dir.join(&save_name);
 
         if let Err(e) = std::fs::write(&save_path, &data) {
@@ -208,7 +192,7 @@ async fn send_file_handler(
         }
 
         let item = SharedItem {
-            id: generate_id(),
+            id: file_id,
             item_type: if content_type.starts_with("image/") {
                 "image"
             } else {
@@ -221,10 +205,10 @@ async fn send_file_handler(
 
         state.items.lock().await.push(item.clone());
         let _ = state.app_handle.emit("new-shared-item", &item);
-        saved.push(item.id);
+        saved += 1;
     }
 
-    if saved.is_empty() {
+    if saved == 0 {
         return (StatusCode::BAD_REQUEST, "No file received").into_response();
     }
 
